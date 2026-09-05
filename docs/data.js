@@ -754,6 +754,18 @@ const tripData = {
     runnerAdvice: "沖繩初秋（9-10月）清晨氣溫約 24-26°C，海邊紫外線偏強，建議備妥薄款防曬帽、太陽眼鏡、導汗帶與運動心率手錶。",
     checklist: [
         {
+            category: "🔥 預先準備",
+            icon: "check-circle",
+            items: [
+                "機票",
+                "飯店",
+                "租車",
+                "餐廳訂位",
+                "旅平險 / 旅遊不便險",
+                "機場停車 / 接駁預訂"
+            ]
+        },
+        {
             category: "核心證件",
             icon: "shield-check",
             items: [
