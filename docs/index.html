@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 沖繩 5 天 4 夜秋日慢活之旅 ｜ 互動地圖與路線指南</title>
+    <!-- Favicon (Okinawa Tropical Gradient Icon) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%230284c7'/><stop offset='100%25' stop-color='%230d9488'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23g)'/><text x='50%25' y='55%25' dominant-baseline='central' text-anchor='middle' font-size='56'>🌴</text></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#070a11'
+                    }
+                }
+            }
+        };
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Custom Dark Mode & Map Styling -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .okinawa-gradient { background: linear-gradient(135deg, #0369a1 0%, #0f766e 100%); }
+    </style>
+</head>
+<body class="bg-[#070a11] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- Header / Hero Section -->
+    <header class="okinawa-gradient text-white py-8 md:py-10 px-4 sm:px-6 shadow-2xl border-b border-slate-800">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 bg-white/10 text-sky-200 text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-widest mb-3 backdrop-blur-md border border-white/15">
+                <i data-lucide="palmtree" class="w-4 h-4 text-emerald-300"></i>
+                <span id="trip-subtitle">秋日慢活之旅 9/29 - 10/3 ｜ 互動地圖與路線指南</span>
+            </div>
+            
+            <h1 id="trip-title" class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight mb-3 text-white"></h1>
+
+            <p class="text-sky-100 text-xs sm:text-sm font-light max-w-2xl mx-auto mb-5 flex items-center justify-center gap-2 flex-wrap">
+                <span class="flex items-center gap-1.5"><i data-lucide="users" class="w-4 h-4 text-sky-300"></i> 同行夥伴：<span id="trip-travelers"></span></span>
+                <span class="text-sky-300">・</span>
+                <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-sky-300"></i> <span id="trip-dates"></span></span>
+            </p>
+
+            <div id="trip-highlights" class="flex flex-wrap justify-center gap-2.5 text-xs font-medium"></div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur border-b border-slate-800/80 py-3 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 flex flex-wrap justify-center gap-2" id="nav-tabs"></div>
+    </nav>
+
+    <!-- Main Content Panels -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+        <div id="panels-container"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-xs text-slate-500 border-t border-slate-800 mt-auto flex flex-col items-center gap-1.5">
+        <p class="flex items-center gap-1.5">
+            <span>2026 沖繩 5 天 4 夜秋日慢活之旅</span>
+            <span>・</span>
+            <span class="text-sky-400 font-semibold">Interactive Route Map Edition</span>
+        </p>
+        <p class="text-slate-600">Base maps &copy; OpenStreetMap contributors &copy; CARTO Dark Matter · Modular Token-Saving Architecture</p>
+    </footer>
+
+    <!-- App Scripts (Separated Data & Logic) -->
+    <script src="data.js"></script>
+    <script src="map.js"></script>
+</body>
+</html>
