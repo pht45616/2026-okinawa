@@ -165,12 +165,17 @@
                             </span>
                             <h2 class="text-2xl font-black text-white mt-2">沖繩 5 天 4 夜全島行程總覽地圖</h2>
                         </div>
-                        <div class="text-xs text-slate-400 flex items-center gap-3">
-                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-400 inline-block"></span> Day 1</span>
-                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Day 2</span>
-                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-teal-400 inline-block"></span> Day 3</span>
-                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> Day 4</span>
-                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-400 inline-block"></span> Day 5</span>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <div class="text-xs text-slate-400 flex items-center gap-3">
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-400 inline-block"></span> Day 1</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Day 2</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-teal-400 inline-block"></span> Day 3</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> Day 4</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-400 inline-block"></span> Day 5</span>
+                            </div>
+                            <button onclick="resetMapView(mapOverview, overviewBounds)" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 shadow">
+                                <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> 重設全景視野
+                            </button>
                         </div>
                     </div>
                     
@@ -991,7 +996,7 @@
 
         // Map instances and bounds
         let mapOverview, mapDay1, mapDay2A, mapDay2B, mapDay3, mapDay4, mapDay5A, mapDay5B;
-        let day1Bounds, day2ABounds, day2BBounds, day3Bounds, day4Bounds, day5ABounds, day5BBounds;
+        let overviewBounds, day1Bounds, day2ABounds, day2BBounds, day3Bounds, day4Bounds, day5ABounds, day5BBounds;
 
         // Route creation helper
         function setupRouteMap(elementId, coords, color) {
@@ -1059,6 +1064,14 @@
 
             // Overview Map
             setupOverviewMap();
+
+            // Ensure initial active tab map (Day 1) fits bounds perfectly
+            setTimeout(() => {
+                if (mapDay1 && day1Bounds) {
+                    mapDay1.invalidateSize();
+                    mapDay1.fitBounds(day1Bounds, { animate: false });
+                }
+            }, 150);
         });
 
         function setupOverviewMap() {
@@ -1092,8 +1105,8 @@
                 L.polyline(latLngs, { color: grp.color, weight: 3, opacity: 0.6, dashArray: '6, 6' }).addTo(mapOverview);
             });
 
-            const allBounds = L.latLngBounds(allPoints).pad(0.1);
-            mapOverview.fitBounds(allBounds);
+            overviewBounds = L.latLngBounds(allPoints).pad(0.12);
+            mapOverview.fitBounds(overviewBounds);
         }
 
         // Focus & Zoom Helper for Itinerary items
@@ -1139,21 +1152,45 @@
                 activeBtn.classList.add('bg-sky-600', 'text-white', 'border-sky-500');
             }
 
-            // Invalidate Map Sizes
+            // Invalidate Map Sizes and Automatically Fit Panoramic View by Default
             setTimeout(() => {
-                if (targetId === 'overview' && mapOverview) mapOverview.invalidateSize();
-                if (targetId === 'day1' && mapDay1) mapDay1.invalidateSize();
+                if (targetId === 'overview' && mapOverview && overviewBounds) {
+                    mapOverview.invalidateSize();
+                    mapOverview.fitBounds(overviewBounds, { animate: false });
+                }
+                if (targetId === 'day1' && mapDay1 && day1Bounds) {
+                    mapDay1.invalidateSize();
+                    mapDay1.fitBounds(day1Bounds, { animate: false });
+                }
                 if (targetId === 'day2') {
-                    if (mapDay2A) mapDay2A.invalidateSize();
-                    if (mapDay2B) mapDay2B.invalidateSize();
+                    const isPlanA = !document.getElementById('day2-planA').classList.contains('hidden');
+                    if (isPlanA && mapDay2A && day2ABounds) {
+                        mapDay2A.invalidateSize();
+                        mapDay2A.fitBounds(day2ABounds, { animate: false });
+                    } else if (!isPlanA && mapDay2B && day2BBounds) {
+                        mapDay2B.invalidateSize();
+                        mapDay2B.fitBounds(day2BBounds, { animate: false });
+                    }
                 }
-                if (targetId === 'day3' && mapDay3) mapDay3.invalidateSize();
-                if (targetId === 'day4' && mapDay4) mapDay4.invalidateSize();
+                if (targetId === 'day3' && mapDay3 && day3Bounds) {
+                    mapDay3.invalidateSize();
+                    mapDay3.fitBounds(day3Bounds, { animate: false });
+                }
+                if (targetId === 'day4' && mapDay4 && day4Bounds) {
+                    mapDay4.invalidateSize();
+                    mapDay4.fitBounds(day4Bounds, { animate: false });
+                }
                 if (targetId === 'day5') {
-                    if (mapDay5A) mapDay5A.invalidateSize();
-                    if (mapDay5B) mapDay5B.invalidateSize();
+                    const isOptA = !document.getElementById('day5-optA').classList.contains('hidden');
+                    if (isOptA && mapDay5A && day5ABounds) {
+                        mapDay5A.invalidateSize();
+                        mapDay5A.fitBounds(day5ABounds, { animate: false });
+                    } else if (!isOptA && mapDay5B && day5BBounds) {
+                        mapDay5B.invalidateSize();
+                        mapDay5B.fitBounds(day5BBounds, { animate: false });
+                    }
                 }
-            }, 100);
+            }, 120);
 
             // Re-render icons if needed
             lucide.createIcons();
@@ -1166,13 +1203,23 @@
                 document.getElementById('day2-planB').classList.add('hidden');
                 document.getElementById('btn-planA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-sky-600 text-white shadow flex items-center gap-1.5';
                 document.getElementById('btn-planB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
-                setTimeout(() => { if (mapDay2A) mapDay2A.invalidateSize(); }, 50);
+                setTimeout(() => {
+                    if (mapDay2A && day2ABounds) {
+                        mapDay2A.invalidateSize();
+                        mapDay2A.fitBounds(day2ABounds, { animate: false });
+                    }
+                }, 60);
             } else {
                 document.getElementById('day2-planA').classList.add('hidden');
                 document.getElementById('day2-planB').classList.remove('hidden');
                 document.getElementById('btn-planB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-emerald-600 text-white shadow flex items-center gap-1.5';
                 document.getElementById('btn-planA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
-                setTimeout(() => { if (mapDay2B) mapDay2B.invalidateSize(); }, 50);
+                setTimeout(() => {
+                    if (mapDay2B && day2BBounds) {
+                        mapDay2B.invalidateSize();
+                        mapDay2B.fitBounds(day2BBounds, { animate: false });
+                    }
+                }, 60);
             }
             lucide.createIcons();
         }
@@ -1184,13 +1231,23 @@
                 document.getElementById('day5-optB').classList.add('hidden');
                 document.getElementById('btn-optA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-purple-600 text-white shadow flex items-center gap-1.5';
                 document.getElementById('btn-optB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
-                setTimeout(() => { if (mapDay5A) mapDay5A.invalidateSize(); }, 50);
+                setTimeout(() => {
+                    if (mapDay5A && day5ABounds) {
+                        mapDay5A.invalidateSize();
+                        mapDay5A.fitBounds(day5ABounds, { animate: false });
+                    }
+                }, 60);
             } else {
                 document.getElementById('day5-optA').classList.add('hidden');
                 document.getElementById('day5-optB').classList.remove('hidden');
                 document.getElementById('btn-optB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-pink-600 text-white shadow flex items-center gap-1.5';
                 document.getElementById('btn-optA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
-                setTimeout(() => { if (mapDay5B) mapDay5B.invalidateSize(); }, 50);
+                setTimeout(() => {
+                    if (mapDay5B && day5BBounds) {
+                        mapDay5B.invalidateSize();
+                        mapDay5B.fitBounds(day5BBounds, { animate: false });
+                    }
+                }, 60);
             }
             lucide.createIcons();
         }
