@@ -3,23 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 沖繩 5 天 4 夜秋日慢活之旅 (Interactive Maps Fixed Edition)</title>
+    <title>2026 沖繩 5 天 4 夜秋日慢活之旅 ｜ 互動地圖與路線指南</title>
+    <!-- Favicon (Okinawa Tropical Gradient Icon) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%230284c7'/><stop offset='100%25' stop-color='%230d9488'/></linearGradient></defs><rect width='100' height='100' rx='28' fill='url(%23g)'/><text x='50%25' y='55%25' dominant-baseline='central' text-anchor='middle' font-size='56'>🌴</text></svg>">
+    <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #090d16;
+            background-color: #070a11;
             color: #f1f5f9;
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
         }
         .okinawa-gradient {
             background: linear-gradient(135deg, #0369a1 0%, #0f766e 100%);
         }
         .card-shadow {
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
         }
-        .map-container iframe {
-            filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        /* Leaflet Dark Theme Customization */
+        .leaflet-container {
+            background-color: #0b1120;
+            font-family: inherit;
+        }
+        .leaflet-popup-content-wrapper {
+            background: #0f172a;
+            color: #f1f5f9;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.6);
+        }
+        .leaflet-popup-tip {
+            background: #0f172a;
+        }
+        .leaflet-popup-content {
+            margin: 12px 14px;
+            line-height: 1.4;
+        }
+        .custom-pin {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 11px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6), 0 0 8px currentColor;
+            border: 2px solid rgba(255,255,255,0.9);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .custom-pin:hover {
+            transform: scale(1.25);
+            z-index: 1000 !important;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070a11;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
     </style>
 </head>
@@ -27,123 +87,187 @@
 
     <!-- Header / Hero Section -->
     <header class="okinawa-gradient text-white py-12 px-6 shadow-2xl border-b border-slate-800">
-        <div class="max-w-5xl mx-auto text-center">
-            <span class="inline-block bg-white/10 text-sky-200 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-widest mb-3 backdrop-blur-md border border-white/10">
-                秋日慢活之旅 🌴 9/29 - 10/3 (Map Fixed Edition)
-            </span>
-            <h1 class="text-3xl md:text-5xl font-black tracking-tight mb-4 text-white">
-                2026 沖繩 5 天 4 夜行程規劃
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 bg-white/10 text-sky-200 text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-widest mb-4 backdrop-blur-md border border-white/10">
+                <i data-lucide="palmtree" class="w-4 h-4 text-emerald-300"></i>
+                <span>秋日慢活之旅 9/29 - 10/3</span>
+                <span class="text-slate-400">｜</span>
+                <span class="text-amber-300 flex items-center gap-1"><i data-lucide="map" class="w-3.5 h-3.5"></i> 即時路徑地圖版</span>
+            </div>
+            
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight mb-4 text-white flex items-center justify-center gap-3">
+                <span>2026 沖繩 5 天 4 夜行程規劃</span>
             </h1>
-            <p class="text-sky-200 text-sm md:text-base font-light max-w-2xl mx-auto mb-6">
-                同行夥伴：哲健 & 周庭 ｜ 航班：去程 9/29 14:40 抵達 ｜ 回程 10/3 15:50 起飛
+
+            <p class="text-sky-100 text-sm md:text-base font-light max-w-2xl mx-auto mb-6 flex items-center justify-center gap-2 flex-wrap">
+                <span class="flex items-center gap-1.5"><i data-lucide="users" class="w-4 h-4 text-sky-300"></i> 同行夥伴：哲健 & 周庭</span>
+                <span class="text-sky-300">・</span>
+                <span class="flex items-center gap-1.5"><i data-lucide="plane-takeoff" class="w-4 h-4 text-sky-300"></i> 去程 9/29 14:40 抵達</span>
+                <span class="text-sky-300">・</span>
+                <span class="flex items-center gap-1.5"><i data-lucide="plane-landing" class="w-4 h-4 text-sky-300"></i> 回程 10/3 15:50 起飛</span>
             </p>
+
             <div class="flex flex-wrap justify-center gap-3 text-xs md:text-sm font-medium">
-                <div class="bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700 text-slate-200">
-                    🏨 Day 1-2：那霸嘉新酒店
+                <div class="bg-slate-900/70 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700/80 text-slate-200 flex items-center gap-2">
+                    <i data-lucide="hotel" class="w-4 h-4 text-sky-400"></i>
+                    <span>Day 1-2：那霸嘉新酒店 (Hotel Collective)</span>
                 </div>
-                <div class="bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700 text-slate-200">
-                    🏨 Day 3-4：恩納水感酒店
+                <div class="bg-slate-900/70 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700/80 text-slate-200 flex items-center gap-2">
+                    <i data-lucide="hotel" class="w-4 h-4 text-teal-400"></i>
+                    <span>Day 3-4：恩納水感酒店 (AQUASENSE)</span>
                 </div>
-                <div class="bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700 text-slate-200">
-                    🚗 Day 3 租車 ➔ Day 5 還車
+                <div class="bg-slate-900/70 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-700/80 text-slate-200 flex items-center gap-2">
+                    <i data-lucide="car" class="w-4 h-4 text-amber-400"></i>
+                    <span>Day 3 租車 ➔ Day 5 機場還車</span>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-5xl mx-auto px-4 py-10 flex-grow w-full">
+    <main class="max-w-6xl mx-auto px-4 py-10 flex-grow w-full">
 
         <!-- Navigation Tabs -->
-        <div class="flex flex-wrap justify-center gap-2 mb-8" id="day-tabs">
-            <button onclick="switchTab('day1')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md bg-sky-600 text-white border border-sky-500" data-target="day1">
-                Day 1 抵達那霸
+        <div class="flex flex-wrap justify-center gap-2.5 mb-8" id="day-tabs">
+            <button onclick="switchTab('overview')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 flex items-center gap-1.5" data-target="overview">
+                <i data-lucide="globe" class="w-4 h-4 text-sky-400"></i> 全島總覽地圖
             </button>
-            <button onclick="switchTab('day2')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800" data-target="day2">
-                Day 2 雙方案選擇 ⚡
+            <button onclick="switchTab('day1')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-md bg-sky-600 text-white border border-sky-500 flex items-center gap-1.5" data-target="day1">
+                <i data-lucide="calendar" class="w-4 h-4"></i> Day 1 抵達那霸
             </button>
-            <button onclick="switchTab('day3')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800" data-target="day3">
-                Day 3 美國村與萬座毛
+            <button onclick="switchTab('day2')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 flex items-center gap-1.5" data-target="day2">
+                <i data-lucide="shuffle" class="w-4 h-4 text-amber-400"></i> Day 2 雙方案選擇
             </button>
-            <button onclick="switchTab('day4')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800" data-target="day4">
-                Day 4 水族館與福木林道
+            <button onclick="switchTab('day3')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 flex items-center gap-1.5" data-target="day3">
+                <i data-lucide="compass" class="w-4 h-4 text-teal-400"></i> Day 3 美國村/萬座毛
             </button>
-            <button onclick="switchTab('day5')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800" data-target="day5">
-                Day 5 讀谷/殘波岬 ✕ 瀨長島
+            <button onclick="switchTab('day4')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 flex items-center gap-1.5" data-target="day4">
+                <i data-lucide="fish" class="w-4 h-4 text-amber-400"></i> Day 4 水族館/福木林
             </button>
-            <button onclick="switchTab('runner')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md bg-slate-900 text-amber-400 border border-slate-800 hover:bg-slate-800" data-target="runner">
-                🏃 晨跑指南
+            <button onclick="switchTab('day5')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-md bg-slate-900 text-slate-300 border border-slate-800 hover:bg-slate-800 flex items-center gap-1.5" data-target="day5">
+                <i data-lucide="shopping-bag" class="w-4 h-4 text-purple-400"></i> Day 5 文青採買/歸途
+            </button>
+            <button onclick="switchTab('runner')" class="tab-btn px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-md bg-slate-900 text-amber-400 border border-slate-800 hover:bg-slate-800 flex items-center gap-1.5" data-target="runner">
+                <i data-lucide="activity" class="w-4 h-4 text-orange-400"></i> 🏃 晨跑路線
             </button>
         </div>
 
         <!-- Content Panels -->
         <div id="panels-container">
 
+            <!-- Overview Island Map Panel -->
+            <div id="overview" class="tab-panel hidden space-y-6">
+                <div class="bg-slate-900 rounded-2xl p-6 md:p-8 card-shadow border border-slate-800">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 pb-4 border-b border-slate-800 gap-3">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-950/80 px-3 py-1 rounded-full border border-sky-800/50 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="map-pinned" class="w-3.5 h-3.5"></i> 全程地理座標整合
+                            </span>
+                            <h2 class="text-2xl font-black text-white mt-2">沖繩 5 天 4 夜全島行程總覽地圖</h2>
+                        </div>
+                        <div class="text-xs text-slate-400 flex items-center gap-3">
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-400 inline-block"></span> Day 1</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span> Day 2</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-teal-400 inline-block"></span> Day 3</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> Day 4</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-400 inline-block"></span> Day 5</span>
+                        </div>
+                    </div>
+                    
+                    <div class="relative w-full h-[520px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                        <div id="map-overview" class="w-full h-full"></div>
+                    </div>
+                    <p class="text-xs text-slate-400 text-center mt-3">
+                        💡 點擊地圖上的任意站點標記，即可檢視該站點詳細名稱、時間與行程介紹。
+                    </p>
+                </div>
+            </div>
+
             <!-- Day 1 -->
             <div id="day1" class="tab-panel space-y-6">
                 <div class="bg-slate-900 rounded-2xl p-6 md:p-8 card-shadow border border-slate-800">
                     <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-950/80 px-3 py-1 rounded-full border border-sky-800/50">Day 1 ｜ 9/29 週二</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-950/80 px-3 py-1 rounded-full border border-sky-800/50 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="plane-landing" class="w-3.5 h-3.5"></i> Day 1 ｜ 9/29 週二
+                            </span>
                             <h2 class="text-2xl font-black text-white mt-2">抵達那霸 ✕ 國際通散策 ✕ 極上牛神戶牛饗宴</h2>
                         </div>
                         <div class="text-right hidden md:block">
-                            <span class="text-xs text-slate-400">住宿</span>
-                            <p class="font-bold text-sky-300">那霸嘉新酒店</p>
+                            <span class="text-xs text-slate-400">住宿飯店</span>
+                            <p class="font-bold text-sky-300 flex items-center gap-1"><i data-lucide="hotel" class="w-4 h-4"></i> 那霸嘉新酒店</p>
                         </div>
                     </div>
                     
                     <!-- Route Flow & Direct Map Link -->
                     <div class="mb-6 bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-slate-400 font-bold mr-1">🗺️ 站點導覽：</span>
-                            <a href="https://maps.google.com/?q=那霸機場" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">機場 ✈️</a>
+                            <span class="text-slate-400 font-bold flex items-center gap-1"><i data-lucide="milestone" class="w-4 h-4 text-sky-400"></i> 路徑順序：</span>
+                            <button onclick="focusLocation(mapDay1, 26.2064, 127.6459, '1. 那霸機場 (OKA)')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">1. 那霸機場 ✈️</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=Hotel+Collective+Naha" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">嘉新酒店 🏨</a>
+                            <button onclick="focusLocation(mapDay1, 26.2162, 127.6872, '2. 那霸嘉新酒店 (Hotel Collective)')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">2. 嘉新酒店 🏨</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=國際通 浮島通" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">國際通 🛍️</a>
+                            <button onclick="focusLocation(mapDay1, 26.2148, 127.6891, '3. 浮島通 / 國際通散策')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">3. 國際通散策 🛍️</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=Gokujougyu Naha" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">極上牛 🥩</a>
+                            <button onclick="focusLocation(mapDay1, 26.1963, 127.6669, '4. 沖繩燒肉 極上牛 (小祿站)')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">4. 極上牛 🥩</button>
                         </div>
-                        <a href="https://www.google.com/maps/dir/那霸機場/Hotel+Collective+Naha/國際通/Gokujougyu+Naha" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                            📍 開啟 Google 完整導航
+                        <a href="https://www.google.com/maps/dir/那霸機場/Hotel+Collective+Naha/國際通/Gokujougyu+Naha" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow text-xs">
+                            <i data-lucide="navigation" class="w-4 h-4"></i> 開啟 Google 完整導航
                         </a>
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid md:grid-cols-2 gap-6 items-start">
                         <div class="space-y-4">
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-sky-500/50 transition" onclick="focusLocation(mapDay1, 26.2064, 127.6459, '1. 那霸機場 (OKA)')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">下午</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">14:40 抵達那霸機場 ➔ 嘉新酒店</h3>
+                                    <span class="bg-sky-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="plane-landing" class="w-3.5 h-3.5"></i> 14:40
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">抵達那霸機場 ➔ 嘉新酒店 Check-in</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">搭乘單軌電車至縣廳前站，步行 7 分鐘入住國際通正中心的 Hotel Collective。</p>
+                                <p class="text-xs text-slate-400 pl-1">搭乘單軌電車至縣廳前站，步行 7 分鐘入住國際通正中心的 Hotel Collective，地理位置極佳。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-sky-500/50 transition" onclick="focusLocation(mapDay1, 26.2148, 127.6891, '3. 浮島通 / 國際通散策')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">傍晚</span>
+                                    <span class="bg-sky-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="footprints" class="w-3.5 h-3.5"></i> 傍晚
+                                    </span>
                                     <h3 class="font-bold text-slate-100 text-sm">國際通與浮島通散策</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">漫步於巷弄獨立選物店與設計小店，享受微涼秋傍晚（暫不買伴手禮）。</p>
+                                <p class="text-xs text-slate-400 pl-1">漫步於巷弄獨立選物店、手工藝小店與手沖咖啡，享受微涼初秋傍晚（伴手禮留至 Day 5 再買）。</p>
                             </div>
-                            <div class="flex flex-col bg-amber-950/30 p-4 rounded-xl gap-2 border border-amber-900/40 border-l-4 border-amber-500">
+
+                            <div class="flex flex-col bg-amber-950/30 p-4 rounded-xl gap-2 border border-amber-900/40 border-l-4 border-amber-500 cursor-pointer hover:border-amber-400 transition" onclick="focusLocation(mapDay1, 26.1963, 127.6669, '4. 沖繩燒肉 極上牛 (小祿站)')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-amber-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">晚餐</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">【極上牛】頂級神戶牛饗宴 🔥</h3>
+                                    <span class="bg-amber-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="flame" class="w-3.5 h-3.5"></i> 18:30
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">晚餐：【極上牛】頂級本土和牛饗宴 🔥</h3>
                                 </div>
-                                <p class="text-xs text-amber-400 pl-1">單軌至小祿站（步行3分）。品嚐神戶牛、松阪牛等日本三大本土頂級和牛。<span class="font-bold">務必提前預約！</span></p>
+                                <p class="text-xs text-amber-400 pl-1">單軌至小祿站（步行3分）。專賣神戶牛、松阪牛等日本三大本土頂級和牛。<span class="font-bold">務必提早預約！</span>飯後可逛小祿 AEON 超市散步。</p>
                             </div>
+
                             <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-slate-700 text-slate-300 font-mono font-bold px-2.5 py-1 rounded text-xs">雨備</span>
+                                    <span class="bg-slate-700 text-slate-300 mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="cloud-rain" class="w-3.5 h-3.5 text-sky-400"></i> 雨備
+                                    </span>
                                     <h3 class="font-bold text-slate-100 text-sm">雨天應變方案</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">逛嘉新酒店對面的琉貿百貨與國際通室內拱廊商街，搭乘遮雨單軌前往小祿站。</p>
+                                <p class="text-xs text-slate-400 pl-1">若落雨，直接逛嘉新酒店對面的琉貿百貨 (Palette Kumoji) 與國際通室內拱廊商街，搭乘全程遮雨單軌前往小祿站享用燒肉。</p>
                             </div>
                         </div>
-                        <!-- Embedded Map -->
-                        <div class="map-container rounded-xl overflow-hidden border border-slate-800 h-[320px] md:h-auto">
-                            <iframe width="100%" height="100%" style="border:0;" loading="lazy" src="https://maps.google.com/maps?q=Hotel+Collective+Naha&output=embed"></iframe>
+
+                        <!-- Embedded Leaflet Route Map -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                                <span class="flex items-center gap-1 text-sky-400 font-bold"><i data-lucide="map" class="w-3.5 h-3.5"></i> Day 1 實時路徑地圖</span>
+                                <button onclick="resetMapView(mapDay1, day1Bounds)" class="hover:text-white transition flex items-center gap-1"><i data-lucide="maximize-2" class="w-3 h-3"></i> 重設全景視野</button>
+                            </div>
+                            <div class="relative w-full h-[380px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                                <div id="map-day1" class="w-full h-full"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -154,126 +278,162 @@
                 <div class="bg-slate-900 rounded-2xl p-6 md:p-8 card-shadow border border-slate-800">
                     <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 pb-4 border-b border-slate-800 gap-4">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/80 px-3 py-1 rounded-full border border-amber-800/50">Day 2 ｜ 9/30 週三 (雙方案對比)</span>
-                            <h2 class="text-2xl font-black text-white mt-2">選擇您的 Day 2 冒險風格</h2>
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/80 px-3 py-1 rounded-full border border-amber-800/50 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="split" class="w-3.5 h-3.5"></i> Day 2 ｜ 9/30 週三 (雙方案對比)
+                            </span>
+                            <h2 class="text-2xl font-black text-white mt-2">選擇您的 Day 2 旅行節奏</h2>
                         </div>
                         <!-- Toggle Buttons -->
                         <div class="flex bg-slate-950 p-1.5 rounded-xl border border-slate-800">
-                            <button onclick="switchDay2Plan('planA')" id="btn-planA" class="px-4 py-2 rounded-lg font-bold text-xs transition bg-sky-600 text-white shadow">
-                                方案 A：那霸古都慢活
+                            <button onclick="switchDay2Plan('planA')" id="btn-planA" class="px-4 py-2 rounded-lg font-bold text-xs transition bg-sky-600 text-white shadow flex items-center gap-1.5">
+                                <i data-lucide="landmark" class="w-3.5 h-3.5"></i> 方案 A：那霸古都慢活
                             </button>
-                            <button onclick="switchDay2Plan('planB')" id="btn-planB" class="px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white">
-                                方案 B：渡嘉敷島跳島
+                            <button onclick="switchDay2Plan('planB')" id="btn-planB" class="px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5">
+                                <i data-lucide="ship" class="w-3.5 h-3.5"></i> 方案 B：渡嘉敷島跳島
                             </button>
                         </div>
                     </div>
 
                     <!-- Plan A Container -->
                     <div id="day2-planA" class="day2-subpanel space-y-6">
-                        <div class="bg-sky-950/30 p-4 rounded-xl border border-sky-900/50 flex items-center justify-between">
+                        <div class="bg-sky-950/30 p-4 rounded-xl border border-sky-900/50 flex items-center justify-between flex-wrap gap-2">
                             <div>
-                                <span class="text-xs font-bold text-sky-400 uppercase">目前顯示：方案 A</span>
-                                <h3 class="text-lg font-bold text-white">那霸古都慢活 ✕ 沖繩飯糰 ✕ 港景海鮮居酒屋</h3>
+                                <span class="text-xs font-bold text-sky-400 uppercase flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> 目前選定：方案 A</span>
+                                <h3 class="text-lg font-bold text-white mt-0.5">那霸古都慢活 ✕ 沖繩飯糰 ✕ 港景海鮮居酒屋</h3>
                             </div>
-                            <span class="text-xs bg-sky-900/60 text-sky-200 px-3 py-1 rounded-full border border-sky-700">輕鬆優雅 步行與單軌為主</span>
+                            <span class="text-xs bg-sky-900/60 text-sky-200 px-3 py-1 rounded-full border border-sky-700 flex items-center gap-1">
+                                <i data-lucide="sparkles" class="w-3 h-3 text-sky-300"></i> 輕鬆優雅 步行與單軌
+                            </span>
                         </div>
 
                         <!-- Route Flow A -->
                         <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-slate-400 font-bold mr-1">🗺️ 站點導覽：</span>
-                                <a href="https://maps.google.com/?q=奧武山公園" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">奧武山公園(晨跑) 🏃</a>
+                                <span class="text-slate-400 font-bold flex items-center gap-1"><i data-lucide="milestone" class="w-4 h-4 text-sky-400"></i> 路徑順序：</span>
+                                <button onclick="focusLocation(mapDay2A, 26.2045, 127.6763, '1. 奧武山公園')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">1. 奧武山公園 🏃</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=首里城公園" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">首里城 🏯</a>
+                                <button onclick="focusLocation(mapDay2A, 26.2170, 127.7195, '2. 首里城公園')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">2. 首里城 🏯</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=ポークたまごおにぎり本店 牧志市場店" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">牧志飯糰 🍙</a>
+                                <button onclick="focusLocation(mapDay2A, 26.2145, 127.6888, '3. ポーたま 牧志市場店')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">3. 牧志飯糰 🍙</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=波上宮" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">波上宮海灘 🌊</a>
+                                <button onclick="focusLocation(mapDay2A, 26.2207, 127.6713, '4. 波上宮 ＆ 波之上海灘')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">4. 波上宮海灘 🌊</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=琉球海鮮酒場 琉星" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">居酒屋 🍻</a>
+                                <button onclick="focusLocation(mapDay2A, 26.2168, 127.6834, '5. 琉球海鮮酒場 琉星')" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">5. 海鮮居酒屋 🍻</button>
                             </div>
-                            <a href="https://www.google.com/maps/dir/奧武山公園/首里城公園/ポークたまごおにぎり本店+牧志市場店/波上宮/琉球海鮮酒場+琉星" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                                📍 開啟 Google 完整導航
+                            <a href="https://www.google.com/maps/dir/奧武山公園/首里城公園/ポークたまごおにぎり本店+牧志市場店/波上宮/琉球海鮮酒場+琉星" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow text-xs">
+                                <i data-lucide="navigation" class="w-4 h-4"></i> 開啟 Google 完整導航
                             </a>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-6">
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
                             <div class="space-y-3 text-xs md:text-sm">
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">06:30 清晨晨跑</span>：嘉新酒店 ➔ 奧武山公園繞圈（約 5 km），跑後回酒店盥洗享用早餐。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-sky-500/50 transition" onclick="focusLocation(mapDay2A, 26.2045, 127.6763, '1. 奧武山公園')">
+                                    <span class="text-sky-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="activity" class="w-3.5 h-3.5"></i> 06:30 清晨晨跑</span>
+                                    嘉新酒店 ➔ 久茂地川 ➔ 奧武山公園繞圈（約 5 km），跑後回酒店盥洗享用精緻早餐。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">10:30 上午</span>：首里城公園歷史散策，漫步古石階與城牆，俯瞰那霸市區與海港全景。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-sky-500/50 transition" onclick="focusLocation(mapDay2A, 26.2170, 127.7195, '2. 首里城公園')">
+                                    <span class="text-sky-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="landmark" class="w-3.5 h-3.5"></i> 10:30 上午散策</span>
+                                    首里城公園歷史漫步，欣賞琉球王國古石階與城牆，俯瞰那霸市區與海港全景。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">12:30 午餐</span>：【ポーたま 牧志市場店】現點現做沖繩飯糰（炸蝦明太子／苦瓜天婦羅口味）。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-sky-500/50 transition" onclick="focusLocation(mapDay2A, 26.2145, 127.6888, '3. ポーたま 牧志市場店')">
+                                    <span class="text-sky-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="utensils" class="w-3.5 h-3.5"></i> 12:30 午餐輕食</span>
+                                    【ポーたま 牧志市場店】現點現做知名沖繩飯糰（炸蝦明太子／苦瓜天婦羅口味），道地且份量適中。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">15:00 下午</span>：波上宮參拜與波之上海灘吹海風放空，午後文青咖啡館小歇。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-sky-500/50 transition" onclick="focusLocation(mapDay2A, 26.2207, 127.6713, '4. 波上宮 ＆ 波之上海灘')">
+                                    <span class="text-sky-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="waves" class="w-3.5 h-3.5"></i> 15:00 下午放空</span>
+                                    波上宮巨岩神社參拜，波之上海灘吹海風踏浪，午後找間文青咖啡小歇（oHacorté 留至 Day 5 本店享用）。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">18:30 晚餐</span>：【琉球海鮮酒場 琉星】或【ぼんぢりや】現流海鮮與阿古豬料理。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-sky-500/50 transition" onclick="focusLocation(mapDay2A, 26.2168, 127.6834, '5. 琉球海鮮酒場 琉星')">
+                                    <span class="text-sky-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="beer" class="w-3.5 h-3.5"></i> 18:30 晚餐居酒屋</span>
+                                    【琉球海鮮酒場 琉星】或【ぼんぢりや 一銀通店】當季現流海鮮、阿古豬料理，現場候位即可。
                                 </div>
-                                <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800/40 text-slate-400">
-                                    <span class="text-slate-300 font-bold">☔ 雨備方案</span>：參觀單軌直達的【沖繩縣立博物館・美術館 (OkiMu)】，室內展覽極具美感。
+                                <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800/40 text-slate-400 flex items-center gap-2">
+                                    <i data-lucide="cloud-rain" class="w-4 h-4 text-sky-400 shrink-0"></i>
+                                    <span><strong>雨備方案</strong>：參觀單軌直達的【沖繩縣立博物館・美術館 (OkiMu)】，現代建築藝術極美。</span>
                                 </div>
                             </div>
-                            <div class="map-container rounded-xl overflow-hidden border border-slate-800 h-[320px] md:h-auto">
-                                <iframe width="100%" height="100%" style="border:0;" loading="lazy" src="https://maps.google.com/maps?q=Shuri+Castle+Naha&output=embed"></iframe>
+
+                            <!-- Embedded Leaflet Route Map 2A -->
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                                    <span class="flex items-center gap-1 text-sky-400 font-bold"><i data-lucide="map" class="w-3.5 h-3.5"></i> 方案 A 實時路徑地圖</span>
+                                    <button onclick="resetMapView(mapDay2A, day2ABounds)" class="hover:text-white transition flex items-center gap-1"><i data-lucide="maximize-2" class="w-3 h-3"></i> 重設全景視野</button>
+                                </div>
+                                <div class="relative w-full h-[400px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                                    <div id="map-day2-a" class="w-full h-full"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Plan B Container -->
                     <div id="day2-planB" class="day2-subpanel hidden space-y-6">
-                        <div class="bg-emerald-950/30 p-4 rounded-xl border border-emerald-900/50 flex items-center justify-between">
+                        <div class="bg-emerald-950/30 p-4 rounded-xl border border-emerald-900/50 flex items-center justify-between flex-wrap gap-2">
                             <div>
-                                <span class="text-xs font-bold text-emerald-400 uppercase">目前顯示：方案 B 備案</span>
-                                <h3 class="text-lg font-bold text-white">渡嘉敷島「慶良間藍」跳島一日遊 🏝️</h3>
+                                <span class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> 目前選定：方案 B (備案)</span>
+                                <h3 class="text-lg font-bold text-white mt-0.5">渡嘉敷島「慶良間藍」跳島一日遊 🏝️</h3>
                             </div>
-                            <span class="text-xs bg-emerald-900/60 text-emerald-200 px-3 py-1 rounded-full border border-emerald-700">需提前 1-2 個月預訂高速船</span>
+                            <span class="text-xs bg-emerald-900/60 text-emerald-200 px-3 py-1 rounded-full border border-emerald-700 flex items-center gap-1">
+                                <i data-lucide="alert-circle" class="w-3 h-3 text-amber-300"></i> 需提早 1-2 個月預訂船票
+                            </span>
                         </div>
 
                         <!-- Route Flow B -->
                         <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-slate-400 font-bold mr-1">🗺️ 站點導覽：</span>
-                                <a href="https://maps.google.com/?q=泊港 Tomarin Naha" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">泊港出發 ⛴️</a>
+                                <span class="text-slate-400 font-bold flex items-center gap-1"><i data-lucide="milestone" class="w-4 h-4 text-emerald-400"></i> 渡輪與島嶼順序：</span>
+                                <button onclick="focusLocation(mapDay2B, 26.2255, 127.6833, '泊港 (Tomarin)')" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">1. 泊港 ⛴️</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=渡嘉敷港" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">渡嘉敷島 🏝️</a>
+                                <button onclick="focusLocation(mapDay2B, 26.1983, 127.3622, '渡嘉敷港')" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">2. 渡嘉敷港 ⚓</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=阿波連海灘 Aharen Beach" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">阿波連海灘 🌊</a>
+                                <button onclick="focusLocation(mapDay2B, 26.1793, 127.3484, '阿波連海灘 (Aharen Beach)')" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">3. 阿波連海灘 🌊</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=琉球海鮮酒場 琉星" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">返回那霸晚餐 🍻</a>
+                                <button onclick="focusLocation(mapDay2B, 26.1747, 127.3478, '阿波連展望台')" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">4. 展望台絕景 📸</button>
+                                <span class="text-slate-600">➔</span>
+                                <button onclick="focusLocation(mapDay2B, 26.2168, 127.6834, '琉球海鮮酒場 琉星')" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">5. 回那霸晚餐 🍻</button>
                             </div>
-                            <a href="https://www.google.com/maps/dir/泊港/渡嘉敷港/阿波連海灘/琉球海鮮酒場+琉星" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                                📍 開啟 Google 完整導航
+                            <a href="https://www.google.com/maps/dir/泊港/渡嘉敷港/阿波連海灘/琉球海鮮酒場+琉星" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow text-xs">
+                                <i data-lucide="navigation" class="w-4 h-4"></i> 開啟 Google 完整導航
                             </a>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-6">
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
                             <div class="space-y-3 text-xs md:text-sm">
                                 <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">08:30 出發</span>：飯店搭計程車至泊港（約 7 分鐘），準備輕便防曬與涉水裝備。
+                                    <span class="text-emerald-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="sun" class="w-3.5 h-3.5"></i> 06:00 晨跑（或多睡飽）</span>
+                                    07:30 飯店早餐，準備輕便涉水鞋與防曬衣物。08:30 搭計程車前往泊港（車程僅約 7 分鐘）。
+                                </div>
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-emerald-500/50 transition" onclick="focusLocation(mapDay2B, 26.1983, 127.3622, '渡嘉敷港')">
+                                    <span class="text-emerald-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="ship" class="w-3.5 h-3.5"></i> 09:00 高速船出海</span>
+                                    搭乘 Marine Liner 直奔渡嘉敷港（僅 35 分鐘，09:35 抵達）。🔥 <span class="text-amber-400 font-bold">高速船極搶手，出發前 1-2 個月官網預定！</span>
+                                </div>
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-emerald-500/50 transition" onclick="focusLocation(mapDay2B, 26.1793, 127.3484, '阿波連海灘 (Aharen Beach)')">
+                                    <span class="text-emerald-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="waves" class="w-3.5 h-3.5"></i> 10:00 阿波連海灘放空</span>
+                                    搭接駁車至世界級「慶良間藍」玻璃海與珊瑚礁，海灘旁特色小食堂品嚐在地島咖哩或炒麵。
+                                </div>
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-emerald-500/50 transition" onclick="focusLocation(mapDay2B, 26.1747, 127.3478, '阿波連展望台')">
+                                    <span class="text-emerald-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="camera" class="w-3.5 h-3.5"></i> 14:00 展望台俯瞰絕景</span>
+                                    沿步道登上久場島/阿波連展望台，俯瞰整座漸層海灣與群島。搭 16:00 高速船返航泊港（16:40 抵達）。
                                 </div>
                                 <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">09:00 高速船</span>：搭乘 Marine Liner 直奔渡嘉敷島（僅 35 分鐘，09:35 抵達）。🔥 <span class="text-amber-400">務必提早官網預訂船票！</span>
+                                    <span class="text-emerald-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="utensils" class="w-3.5 h-3.5"></i> 18:30 回飯店盥洗 ＆ 晚餐</span>
+                                    回嘉新酒店舒服洗熱水澡放鬆，步行至久茂地享用豐盛海鮮與沖繩料理。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">10:00 阿波連海灘</span>：搭接駁車至世界級「慶良間藍」玻璃海，踏浪放空、食堂享用島咖哩。
-                                </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">15:30 返航</span>：登上阿波連展望台俯瞰蔚藍海灣，搭 16:00 高速船返回泊港（16:40 抵達）。
-                                </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">18:30 晚餐</span>：返回嘉新酒店盥洗放鬆，步行至久茂地享用【琉球海鮮酒場 琉星】。
-                                </div>
-                                <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800/40 text-slate-400">
-                                    <span class="text-slate-300 font-bold">☔ 雨備方案</span>：若風浪大船班停駛，直接切換回方案 A 或參觀 OkiMu 美術館。
+                                <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800/40 text-slate-400 flex items-center gap-2">
+                                    <i data-lucide="cloud-rain" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                                    <span><strong>雨備方案</strong>：若遇雨或風浪過大停駛，直接切換回方案 A 或參觀 OkiMu 美術館。</span>
                                 </div>
                             </div>
-                            <div class="map-container rounded-xl overflow-hidden border border-slate-800 h-[320px] md:h-auto">
-                                <iframe width="100%" height="100%" style="border:0;" loading="lazy" src="https://maps.google.com/maps?q=Aharen+Beach+Tokashiki+Okinawa&output=embed"></iframe>
+
+                            <!-- Embedded Leaflet Route Map 2B -->
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                                    <span class="flex items-center gap-1 text-emerald-400 font-bold"><i data-lucide="map" class="w-3.5 h-3.5"></i> 方案 B 跨海航線地圖</span>
+                                    <button onclick="resetMapView(mapDay2B, day2BBounds)" class="hover:text-white transition flex items-center gap-1"><i data-lucide="maximize-2" class="w-3 h-3"></i> 重設全景視野</button>
+                                </div>
+                                <div class="relative w-full h-[400px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                                    <div id="map-day2-b" class="w-full h-full"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -285,69 +445,93 @@
                 <div class="bg-slate-900 rounded-2xl p-6 md:p-8 card-shadow border border-slate-800">
                     <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-950/80 px-3 py-1 rounded-full border border-sky-800/50">Day 3 ｜ 10/1 週四</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-teal-400 bg-teal-950/80 px-3 py-1 rounded-full border border-teal-800/50 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="car" class="w-3.5 h-3.5"></i> Day 3 ｜ 10/1 週四 (開啟自駕)
+                            </span>
                             <h2 class="text-2xl font-black text-white mt-2">市區取車 ✕ 美國村/萬座毛 ✕ 恩納水感海景</h2>
                         </div>
                         <div class="text-right hidden md:block">
-                            <span class="text-xs text-slate-400">住宿</span>
-                            <p class="font-bold text-sky-300">恩納水感酒店</p>
+                            <span class="text-xs text-slate-400">入住渡假村</span>
+                            <p class="font-bold text-teal-300 flex items-center gap-1"><i data-lucide="hotel" class="w-4 h-4"></i> 恩納水感酒店</p>
                         </div>
                     </div>
 
                     <!-- Route Flow -->
                     <div class="mb-6 bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-slate-400 font-bold mr-1">🗺️ 站點導覽：</span>
-                            <a href="https://maps.google.com/?q=那霸市區 租車" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">那霸取車 🚗</a>
+                            <span class="text-slate-400 font-bold flex items-center gap-1"><i data-lucide="milestone" class="w-4 h-4 text-teal-400"></i> 路徑順序：</span>
+                            <button onclick="focusLocation(mapDay3, 26.2198, 127.6855, '1. 租車取車點 (美榮橋/縣廳前)')" class="bg-slate-800 hover:bg-teal-700 text-teal-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">1. 市區取車 🚗</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=北谷町美國村" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">美國村 🎡</a>
+                            <button onclick="focusLocation(mapDay3, 26.3217, 127.7554, '2. GORDIE\'S 漢堡 (北谷美國村)')" class="bg-slate-800 hover:bg-teal-700 text-teal-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">2. 美國村 🎡</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=萬座毛" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">萬座毛海岬 🌊</a>
+                            <button onclick="focusLocation(mapDay3, 26.5049, 127.8505, '3. 萬座毛海岬遊步道')" class="bg-slate-800 hover:bg-teal-700 text-teal-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">3. 萬座毛海岬 🌊</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=AQUASENSE Hotel & Resort" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">恩納水感酒店 🏨</a>
+                            <button onclick="focusLocation(mapDay3, 26.4475, 127.8136, '4. 恩納水感酒店 (AQUASENSE)')" class="bg-slate-800 hover:bg-teal-700 text-teal-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">4. 恩納水感 🏨</button>
+                            <span class="text-slate-600">➔</span>
+                            <button onclick="focusLocation(mapDay3, 26.4389, 127.8082, '5. 琉球料理 海物語 本店')" class="bg-slate-800 hover:bg-teal-700 text-teal-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">5. 琉球料理海物語 🎶</button>
                         </div>
-                        <a href="https://www.google.com/maps/dir/那霸市區/北谷町美國村/萬座毛/AQUASENSE+Hotel+%26+Resort" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                            📍 開啟 Google 完整導航
+                        <a href="https://www.google.com/maps/dir/美榮橋站/北谷町美國村/萬座毛/AQUASENSE+Hotel+%26+Resort" target="_blank" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow text-xs">
+                            <i data-lucide="navigation" class="w-4 h-4"></i> 開啟 Google 完整導航
                         </a>
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid md:grid-cols-2 gap-6 items-start">
                         <div class="space-y-4 text-xs md:text-sm">
-                            <div class="flex flex-col bg-teal-950/30 p-4 rounded-xl gap-2 border border-teal-900/40">
+                            <div class="flex flex-col bg-teal-950/30 p-4 rounded-xl gap-2 border border-teal-900/40 cursor-pointer hover:border-teal-400 transition" onclick="focusLocation(mapDay3, 26.2198, 127.6855, '1. 租車取車點 (美榮橋/縣廳前)')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-teal-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">09:00</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">市區取車自駕 🚗</h3>
+                                    <span class="bg-teal-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="key" class="w-3.5 h-3.5"></i> 09:00
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">那霸市區取車自駕 🚗</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">步行至營業所（Times / Orix 美榮橋或縣廳前）取車，沿國道 58 號北上。</p>
+                                <p class="text-xs text-slate-400 pl-1">步行至營業所（Times / Orix 美榮橋或縣廳前）辦理取車，沿國道 58 號北上正式開啟自駕旅程。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-teal-500/50 transition" onclick="focusLocation(mapDay3, 26.3217, 127.7554, '2. GORDIE\'S 漢堡 (北谷美國村)')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">12:00</span>
+                                    <span class="bg-sky-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="coffee" class="w-3.5 h-3.5"></i> 12:00
+                                    </span>
                                     <h3 class="font-bold text-slate-100 text-sm">北谷町美國村 ✕ 午餐雙選擇</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">鹹食首選【GORDIE'S】漢堡或【Chatan Steam Seafood】蒸氣海鮮；甜點【Seaside Cafe Hanon】舒芙蕾鬆餅。</p>
+                                <p class="text-xs text-slate-400 pl-1">鹹食推薦【GORDIE'S】炭火手打漢堡神店或【Chatan Steam Seafood】蒸氣海鮮；甜點推薦【Seaside Cafe Hanon】海景舒芙蕾鬆餅。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-teal-500/50 transition" onclick="focusLocation(mapDay3, 26.5049, 127.8505, '3. 萬座毛海岬遊步道')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">下午</span>
+                                    <span class="bg-sky-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i> 下午
+                                    </span>
                                     <h3 class="font-bold text-slate-100 text-sm">【戶外健走】萬座毛海岬遊步道 (Manzamo)</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">隆起珊瑚礁上的壯麗海岬健行，遠眺象鼻岩與清澈透底的群青斷崖，拍照極美！</p>
+                                <p class="text-xs text-slate-400 pl-1">隆起珊瑚礁上的壯麗海岬健行，遠眺象鼻岩與清澈透底的琉球群青斷崖，步道舒適平坦好走（約 30-40 分鐘），拍照極美。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-teal-500/50 transition" onclick="focusLocation(mapDay3, 26.4475, 127.8136, '4. 恩納水感酒店 (AQUASENSE)')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">15:30</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">入住恩納水感酒店 (AQUASENSE) ＆ 晚餐</h3>
+                                    <span class="bg-teal-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="hotel" class="w-3.5 h-3.5"></i> 15:30
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">入住 AQUASENSE 恩納水感 ＆ 琉球晚餐</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">開箱海景露台按摩浴缸。晚餐三選一：【海物語本店】三線琴民謠、飯店【Bon Fire】中式創意海鮮、或【阿古豬專門 恩納豚屋】。</p>
+                                <p class="text-xs text-slate-400 pl-1">開箱海景露台露天按摩浴缸。晚餐三選一：【海物語本店】（三線琴民謠海鮮）、飯店【Bon Fire】創意中式海鮮、或【恩納豚屋】阿古豬涮涮鍋。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/40 p-3 rounded-xl border border-slate-800/40 text-slate-400">
-                                <span class="text-slate-300 font-bold">☔ 雨備方案</span>：前往全沖繩最大室內商場【AEON MALL Okinawa Rycom】逛街完全不淋雨。
+
+                            <div class="flex flex-col bg-slate-950/40 p-3 rounded-xl border border-slate-800/40 text-slate-400 flex items-center gap-2">
+                                <i data-lucide="cloud-rain" class="w-4 h-4 text-teal-400 shrink-0"></i>
+                                <span><strong>雨備方案</strong>：前往全沖繩最大【永旺夢樂城來客夢 (AEON Rycom)】室內大水族箱與商場不淋雨。</span>
                             </div>
                         </div>
-                        <!-- Embedded Map -->
-                        <div class="map-container rounded-xl overflow-hidden border border-slate-800 h-[320px] md:h-auto">
-                            <iframe width="100%" height="100%" style="border:0;" loading="lazy" src="https://maps.google.com/maps?q=American+Village+Chatan+Okinawa&output=embed"></iframe>
+
+                        <!-- Embedded Leaflet Route Map 3 -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                                <span class="flex items-center gap-1 text-teal-400 font-bold"><i data-lucide="map" class="w-3.5 h-3.5"></i> Day 3 自駕路徑地圖</span>
+                                <button onclick="resetMapView(mapDay3, day3Bounds)" class="hover:text-white transition flex items-center gap-1"><i data-lucide="maximize-2" class="w-3 h-3"></i> 重設全景視野</button>
+                            </div>
+                            <div class="relative w-full h-[400px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                                <div id="map-day3" class="w-full h-full"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -358,73 +542,98 @@
                 <div class="bg-slate-900 rounded-2xl p-6 md:p-8 card-shadow border border-slate-800">
                     <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-sky-400 bg-sky-950/80 px-3 py-1 rounded-full border border-sky-800/50">Day 4 ｜ 10/2 週五</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/80 px-3 py-1 rounded-full border border-amber-800/50 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="fish" class="w-3.5 h-3.5"></i> Day 4 ｜ 10/2 週五 (北部巡航)
+                            </span>
                             <h2 class="text-2xl font-black text-white mt-2">海景晨跑 ✕ 美麗海水族館 ✕ 岸本食堂 ✕ 福木林道</h2>
                         </div>
                         <div class="text-right hidden md:block">
-                            <span class="text-xs text-slate-400">住宿</span>
-                            <p class="font-bold text-sky-300">恩納水感酒店</p>
+                            <span class="text-xs text-slate-400">住宿飯店</span>
+                            <p class="font-bold text-amber-300 flex items-center gap-1"><i data-lucide="hotel" class="w-4 h-4"></i> 恩納水感酒店</p>
                         </div>
                     </div>
 
                     <!-- Route Flow -->
                     <div class="mb-6 bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-slate-400 font-bold mr-1">🗺️ 站點導覽：</span>
-                            <a href="https://maps.google.com/?q=恩納村 國道58號" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">恩納晨跑 🏃</a>
+                            <span class="text-slate-400 font-bold flex items-center gap-1"><i data-lucide="milestone" class="w-4 h-4 text-amber-400"></i> 路徑順序：</span>
+                            <button onclick="focusLocation(mapDay4, 26.4475, 127.8136, '1. 恩納國道58海側晨跑路線')" class="bg-slate-800 hover:bg-amber-700 text-amber-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">1. 恩納海景跑 🏃</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=沖繩美麗海水族館" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">美麗海水族館 🐋</a>
+                            <button onclick="focusLocation(mapDay4, 26.6943, 127.8779, '2. 沖繩美麗海水族館')" class="bg-slate-800 hover:bg-amber-700 text-amber-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">2. 美麗海水族館 🐋</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=岸本食堂 本部町" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">岸本食堂 🍜</a>
+                            <button onclick="focusLocation(mapDay4, 26.6628, 127.8887, '3. 百年老店 岸本食堂')" class="bg-slate-800 hover:bg-amber-700 text-amber-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">3. 岸本食堂 🍜</button>
                             <span class="text-slate-600">➔</span>
-                            <a href="https://maps.google.com/?q=備瀨福木林道" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">福木林道騎車 🚴</a>
+                            <button onclick="focusLocation(mapDay4, 26.7042, 127.8814, '4. 備瀨福木林道')" class="bg-slate-800 hover:bg-amber-700 text-amber-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">4. 福木林道單車 🚴</button>
+                            <span class="text-slate-600">➔</span>
+                            <button onclick="focusLocation(mapDay4, 26.5055, 127.8552, '5. 島時間 (Shimajikan)')" class="bg-slate-800 hover:bg-amber-700 text-amber-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">5. 島時間晚餐 🥢</button>
                         </div>
-                        <a href="https://www.google.com/maps/dir/AQUASENSE+Hotel+%26+Resort/沖繩美麗海水族館/岸本食堂/備瀨福木林道" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                            📍 開啟 Google 完整導航
+                        <a href="https://www.google.com/maps/dir/AQUASENSE+Hotel+%26+Resort/沖繩美麗海水族館/岸本食堂/備瀨福木林道/島時間" target="_blank" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow text-xs">
+                            <i data-lucide="navigation" class="w-4 h-4"></i> 開啟 Google 完整導航
                         </a>
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid md:grid-cols-2 gap-6 items-start">
                         <div class="space-y-4 text-xs md:text-sm">
                             <div class="flex flex-col bg-amber-950/30 p-4 rounded-xl gap-2 border border-amber-900/40 border-l-4 border-amber-500">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-amber-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">06:30</span>
+                                    <span class="bg-amber-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="activity" class="w-3.5 h-3.5"></i> 06:30
+                                    </span>
                                     <h3 class="font-bold text-slate-100 text-sm">國道 58 號海岸線海景晨跑 🏃</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">伴隨初秋微風與清澈海浪聲，跑感極佳。跑後回酒店享用豐盛早餐。</p>
+                                <p class="text-xs text-slate-400 pl-1">伴隨初秋微風與清澈海浪聲，海側人行道寬敞平坦，跑感極佳。跑後回酒店享用豐盛海景早餐。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-amber-500/50 transition" onclick="focusLocation(mapDay4, 26.6943, 127.8779, '2. 沖繩美麗海水族館')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">11:15</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">沖繩美麗海水族館 🐋</h3>
+                                    <span class="bg-sky-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="fish" class="w-3.5 h-3.5"></i> 11:15
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">沖繩美麗海水族館（黑潮之海）🐋</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">11:00 前抵達，在「黑潮之海」超大壓克力水槽前靜看鯨鯊與鬼蝠魟遨遊，感受深藍療癒。</p>
+                                <p class="text-xs text-slate-400 pl-1">在「黑潮之海」超大壓克力水槽前靜看鯨鯊與鬼蝠魟遨遊，感受深藍世界的極致靜謐與療癒。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-amber-500/50 transition" onclick="focusLocation(mapDay4, 26.6628, 127.8887, '3. 百年老店 岸本食堂')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">13:00</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">午餐：百年老店【岸本食堂】</h3>
+                                    <span class="bg-sky-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="utensils" class="w-3.5 h-3.5"></i> 13:00
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">午餐：百年老店【岸本食堂】手打沖繩麵</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">本部町代表性手打沖繩麵老店，古法柴火熬煮高湯搭配厚切三層肉（備案：花人逢披薩）。</p>
+                                <p class="text-xs text-slate-400 pl-1">本部町代表性老店，古法木灰水手工揉麵、柴火熬煮清甜高湯搭厚切三層肉（備案：花人逢海景披薩）。</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-amber-500/50 transition" onclick="focusLocation(mapDay4, 26.7042, 127.8814, '4. 備瀨福木林道')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">下午</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">備瀨福木林道 🚴 租自行車漫遊</h3>
+                                    <span class="bg-amber-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="bike" class="w-3.5 h-3.5"></i> 14:30
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">備瀨福木林道（🚴 租自行車漫遊）</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">租借腳踏車穿梭在數千棵茂密福木樹蔭綠色隧道中，一路延伸至海灘，極具日系文藝感！</p>
+                                <p class="text-xs text-slate-400 pl-1">入口處租借腳踏車，穿梭在數千棵茂密福木樹蔭形成的綠色隧道中一路騎向海灘，極具日系文藝感！</p>
                             </div>
-                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60">
+
+                            <div class="flex flex-col bg-slate-950/60 p-4 rounded-xl gap-2 border border-slate-800/60 cursor-pointer hover:border-amber-500/50 transition" onclick="focusLocation(mapDay4, 26.5055, 127.8552, '5. 島時間 (Shimajikan)')">
                                 <div class="flex items-center gap-2">
-                                    <span class="bg-sky-600 text-white font-mono font-bold px-2.5 py-1 rounded text-xs">18:30</span>
-                                    <h3 class="font-bold text-slate-100 text-sm">晚餐：【島時間】居酒食堂</h3>
+                                    <span class="bg-sky-600 text-white mono-font font-bold px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                                        <i data-lucide="utensils-crossed" class="w-3.5 h-3.5"></i> 18:30
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-sm">晚餐：恩納村在地食堂【島時間】</h3>
                                 </div>
-                                <p class="text-xs text-slate-400 pl-1">品嚐沖繩苦瓜炒豆腐、自製炸魚餅與海苔茶漬飯。</p>
+                                <p class="text-xs text-slate-400 pl-1">品嚐沖繩苦瓜炒豆腐、手工海苔茶漬飯與阿古豬家常料理，現場入座即可。</p>
                             </div>
                         </div>
-                        <!-- Embedded Map -->
-                        <div class="map-container rounded-xl overflow-hidden border border-slate-800 h-[320px] md:h-auto">
-                            <iframe width="100%" height="100%" style="border:0;" loading="lazy" src="https://maps.google.com/maps?q=Okinawa+Churaumi+Aquarium&output=embed"></iframe>
+
+                        <!-- Embedded Leaflet Route Map 4 -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                                <span class="flex items-center gap-1 text-amber-400 font-bold"><i data-lucide="map" class="w-3.5 h-3.5"></i> Day 4 北部自駕路徑地圖</span>
+                                <button onclick="resetMapView(mapDay4, day4Bounds)" class="hover:text-white transition flex items-center gap-1"><i data-lucide="maximize-2" class="w-3 h-3"></i> 重設全景視野</button>
+                            </div>
+                            <div class="relative w-full h-[400px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                                <div id="map-day4" class="w-full h-full"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -435,104 +644,132 @@
                 <div class="bg-slate-900 rounded-2xl p-6 md:p-8 card-shadow border border-slate-800">
                     <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 pb-4 border-b border-slate-800 gap-4">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800/50">Day 5 ｜ 10/3 週六 (上午晨景二選一)</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-purple-400 bg-purple-950/80 px-3 py-1 rounded-full border border-purple-800/50 flex items-center gap-1.5 w-fit">
+                                <i data-lucide="split" class="w-3.5 h-3.5"></i> Day 5 ｜ 10/3 週六 (上午晨景二選一)
+                            </span>
                             <h2 class="text-2xl font-black text-white mt-2">外人住宅文青採買 ✕ 瀨長島機場歸途</h2>
                         </div>
                         <!-- Toggle Buttons Day 5 -->
                         <div class="flex bg-slate-950 p-1.5 rounded-xl border border-slate-800">
-                            <button onclick="switchDay5Opt('optA')" id="btn-optA" class="px-4 py-2 rounded-lg font-bold text-xs transition bg-sky-600 text-white shadow">
-                                選項 A：殘波岬海景
+                            <button onclick="switchDay5Opt('optA')" id="btn-optA" class="px-4 py-2 rounded-lg font-bold text-xs transition bg-purple-600 text-white shadow flex items-center gap-1.5">
+                                <i data-lucide="sun" class="w-3.5 h-3.5"></i> 選項 A：殘波岬海景
                             </button>
-                            <button onclick="switchDay5Opt('optB')" id="btn-optB" class="px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white">
-                                選項 B：陶藝村散策
+                            <button onclick="switchDay5Opt('optB')" id="btn-optB" class="px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5">
+                                <i data-lucide="palette" class="w-3.5 h-3.5"></i> 選項 B：陶藝村散策
                             </button>
                         </div>
                     </div>
 
                     <!-- Option A Container -->
                     <div id="day5-optA" class="day5-subpanel space-y-6">
-                        <div class="bg-sky-950/30 p-3 rounded-xl border border-sky-900/50 text-xs text-sky-200">
-                            ✨ <strong>選項 A 亮點</strong>：退房後先前往 **殘波岬燈塔公園**，登上 30 公尺高的斷崖欣賞白色燈塔與洶湧壯麗海浪。
+                        <div class="bg-purple-950/30 p-3.5 rounded-xl border border-purple-900/50 text-xs text-purple-200 flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-purple-300 shrink-0"></i>
+                            <span><strong>選項 A 亮點</strong>：退房後先前往【殘波岬燈塔公園】，登上 30 公尺高的隆起斷崖欣賞白色燈塔與洶湧壯麗海浪。</span>
                         </div>
 
                         <!-- Route Flow 5A -->
                         <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-slate-400 font-bold mr-1">🗺️ 站點導覽：</span>
-                                <a href="https://maps.google.com/?q=殘波岬燈塔" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">殘波岬 🗼</a>
+                                <span class="text-slate-400 font-bold flex items-center gap-1"><i data-lucide="milestone" class="w-4 h-4 text-purple-400"></i> 路徑順序 (A)：</span>
+                                <button onclick="focusLocation(mapDay5A, 26.4402, 127.7126, '1. 殘波岬燈塔公園')" class="bg-slate-800 hover:bg-purple-700 text-purple-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">1. 殘波岬 🗼</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=港川外人住宅區" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">港川外人住宅 🏘️</a>
+                                <button onclick="focusLocation(mapDay5A, 26.2625, 127.7153, '2. 港川外人住宅區 (oHacorté 港川店)')" class="bg-slate-800 hover:bg-purple-700 text-purple-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">2. 港川外人住宅 🏘️</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=瀨長島 Umikaji Terrace" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">瀨長島 ✈️</a>
+                                <button onclick="focusLocation(mapDay5A, 26.1751, 127.6433, '3. 瀨長島 Umikaji Terrace')" class="bg-slate-800 hover:bg-purple-700 text-purple-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">3. 瀨長島 ✈️</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=那霸機場 租車還車" target="_blank" class="bg-slate-800 hover:bg-sky-700 text-sky-300 hover:text-white px-3 py-1.5 rounded-lg transition">機場還車 🚙</a>
+                                <button onclick="focusLocation(mapDay5A, 26.1950, 127.6521, '4. 那霸機場租車營業所')" class="bg-slate-800 hover:bg-purple-700 text-purple-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">4. 還車返台 🚙</button>
                             </div>
-                            <a href="https://www.google.com/maps/dir/殘波岬燈塔/港川外人住宅區/瀨長島/那霸機場" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                                📍 開啟 Google 完整導航
+                            <a href="https://www.google.com/maps/dir/殘波岬燈塔/港川外人住宅區/瀨長島/那霸機場" target="_blank" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow text-xs">
+                                <i data-lucide="navigation" class="w-4 h-4"></i> 開啟 Google 完整導航
                             </a>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-6">
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
                             <div class="space-y-3 text-xs md:text-sm">
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">09:00 晨景</span>：退房後前往【殘波岬燈塔公園】，感受壯麗海浪與斷崖絕景。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-purple-500/50 transition" onclick="focusLocation(mapDay5A, 26.4402, 127.7126, '1. 殘波岬燈塔公園')">
+                                    <span class="text-purple-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="sun" class="w-3.5 h-3.5"></i> 09:00 晨景散步</span>
+                                    退房後前往【殘波岬燈塔公園】，海風清爽，感受 30 米高斷崖浪濤拍打的壯闊大景。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">10:30 港川外人住宅</span>：美軍宿舍改建質感聚落，品嚐【oHacorté 港川本店】水果塔，採買砂餅與檸檬蛋糕伴手禮。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-purple-500/50 transition" onclick="focusLocation(mapDay5A, 26.2625, 127.7153, '2. 港川外人住宅區 (oHacorté 港川店)')">
+                                    <span class="text-purple-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> 10:30 港川外人住宅文青採買</span>
+                                    舊美軍宿舍改建聚落，品嚐【oHacorté 港川本店】招牌水果塔，採買「旅するタルト砂餅」與「檸檬蛋糕」伴手禮。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-sky-400 font-bold">12:00 瀨長島午餐</span>：白色地中海聚落看飛機起降、海鹽伴手禮最後補貨。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-purple-500/50 transition" onclick="focusLocation(mapDay5A, 26.1751, 127.6433, '3. 瀨長島 Umikaji Terrace')">
+                                    <span class="text-purple-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="coffee" class="w-3.5 h-3.5"></i> 12:00 瀨長島午餐 ＆ 看飛機</span>
+                                    白色地中海階梯聚落近距離欣賞飛機震撼起降，採買沖繩海鹽與辣油等伴手禮。
                                 </div>
                                 <div class="bg-amber-950/30 p-3.5 rounded-xl border border-amber-900/40 border-l-4 border-amber-500">
-                                    <span class="text-amber-400 font-bold">13:30 還車返台 ⚠️</span>：抵達機場附近營業所還車（比原定提早30分），接駁車至航廈，搭 15:50 航班起飛返台！
+                                    <span class="text-amber-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="plane" class="w-3.5 h-3.5"></i> 13:30 機場營業所還車 ➔ 15:50 起飛</span>
+                                    預留充裕時間還車搭接駁車至航廈，搭乘 15:50 航班起飛返台，滿載美好回憶！
                                 </div>
                             </div>
-                            <div class="map-container rounded-xl overflow-hidden border border-slate-800 h-[320px] md:h-auto">
-                                <iframe width="100%" height="100%" style="border:0;" loading="lazy" src="https://maps.google.com/maps?q=Zampa+Cape+Okinawa&output=embed"></iframe>
+
+                            <!-- Embedded Leaflet Route Map 5A -->
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                                    <span class="flex items-center gap-1 text-purple-400 font-bold"><i data-lucide="map" class="w-3.5 h-3.5"></i> Day 5 (選項 A) 路徑地圖</span>
+                                    <button onclick="resetMapView(mapDay5A, day5ABounds)" class="hover:text-white transition flex items-center gap-1"><i data-lucide="maximize-2" class="w-3 h-3"></i> 重設全景視野</button>
+                                </div>
+                                <div class="relative w-full h-[400px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                                    <div id="map-day5-a" class="w-full h-full"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Option B Container -->
                     <div id="day5-optB" class="day5-subpanel hidden space-y-6">
-                        <div class="bg-emerald-950/30 p-3 rounded-xl border border-emerald-900/50 text-xs text-emerald-200">
-                            ✨ <strong>選項 B 亮點</strong>：前往 **讀谷山燒 陶藝之村 (Yachimun no Sato)**，散步在被紅瓦古窯包圍的石板路上，參觀在地陶藝家工坊。
+                        <div class="bg-pink-950/30 p-3.5 rounded-xl border border-pink-900/50 text-xs text-pink-200 flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4 text-pink-300 shrink-0"></i>
+                            <span><strong>選項 B 亮點</strong>：前往【讀谷山燒 陶藝之村】，在被紅瓦古窯包圍的石板路上漫步，參觀手作陶藝工坊與挑選精緻器皿。</span>
                         </div>
 
                         <!-- Route Flow 5B -->
                         <div class="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-slate-400 font-bold mr-1">🗺️ 站點導覽：</span>
-                                <a href="https://maps.google.com/?q=Yachimun no Sato 讀谷山燒" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">陶藝之村 🏺</a>
+                                <span class="text-slate-400 font-bold flex items-center gap-1"><i data-lucide="milestone" class="w-4 h-4 text-pink-400"></i> 路徑順序 (B)：</span>
+                                <button onclick="focusLocation(mapDay5B, 26.4087, 127.7634, '1. 讀谷山燒 陶藝之村')" class="bg-slate-800 hover:bg-pink-700 text-pink-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">1. 陶藝之村 🏺</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=港川外人住宅區" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">港川外人住宅 🏘️</a>
+                                <button onclick="focusLocation(mapDay5B, 26.2625, 127.7153, '2. 港川外人住宅區 (oHacorté 港川店)')" class="bg-slate-800 hover:bg-pink-700 text-pink-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">2. 港川外人住宅 🏘️</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=瀨長島 Umikaji Terrace" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">瀨長島 ✈️</a>
+                                <button onclick="focusLocation(mapDay5B, 26.1751, 127.6433, '3. 瀨長島 Umikaji Terrace')" class="bg-slate-800 hover:bg-pink-700 text-pink-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">3. 瀨長島 ✈️</button>
                                 <span class="text-slate-600">➔</span>
-                                <a href="https://maps.google.com/?q=那霸機場 租車還車" target="_blank" class="bg-slate-800 hover:bg-emerald-700 text-emerald-300 hover:text-white px-3 py-1.5 rounded-lg transition">機場還車 🚙</a>
+                                <button onclick="focusLocation(mapDay5B, 26.1950, 127.6521, '4. 那霸機場租車營業所')" class="bg-slate-800 hover:bg-pink-700 text-pink-300 hover:text-white px-2.5 py-1.5 rounded-lg transition">4. 還車返台 🚙</button>
                             </div>
-                            <a href="https://www.google.com/maps/dir/讀谷山燒陶藝之村/港川外人住宅區/瀨長島/那霸機場" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                                📍 開啟 Google 完整導航
+                            <a href="https://www.google.com/maps/dir/讀谷山燒陶藝之村/港川外人住宅區/瀨長島/那霸機場" target="_blank" class="bg-pink-600 hover:bg-pink-500 text-white font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow text-xs">
+                                <i data-lucide="navigation" class="w-4 h-4"></i> 開啟 Google 完整導航
                             </a>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-6">
+                        <div class="grid md:grid-cols-2 gap-6 items-start">
                             <div class="space-y-3 text-xs md:text-sm">
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">09:00 陶藝村</span>：退房後前往【讀谷山燒 陶藝之村】，在紅瓦古窯與石板路間尋訪在地手作陶器。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-pink-500/50 transition" onclick="focusLocation(mapDay5B, 26.4087, 127.7634, '1. 讀谷山燒 陶藝之村')">
+                                    <span class="text-pink-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="palette" class="w-3.5 h-3.5"></i> 09:00 陶藝古窯聚落</span>
+                                    退房後前往【讀谷山燒 陶藝之村】，在琉球紅瓦登窯與綠意石板路間探訪在地手作器皿與藝術選物。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">10:30 港川外人住宅</span>：品嚐【oHacorté 港川本店】水果塔，採買砂餅與檸檬蛋糕伴手禮。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-pink-500/50 transition" onclick="focusLocation(mapDay5B, 26.2625, 127.7153, '2. 港川外人住宅區 (oHacorté 港川店)')">
+                                    <span class="text-pink-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> 10:30 港川外人住宅文青採買</span>
+                                    品嚐【oHacorté 港川本店】水果塔，採買砂餅與檸檬蛋糕等質感伴手禮。
                                 </div>
-                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60">
-                                    <span class="text-emerald-400 font-bold">12:00 瀨長島午餐</span>：白色地中海聚落看飛機起降、海鹽伴手禮最後補貨。
+                                <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-pink-500/50 transition" onclick="focusLocation(mapDay5B, 26.1751, 127.6433, '3. 瀨長島 Umikaji Terrace')">
+                                    <span class="text-pink-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="coffee" class="w-3.5 h-3.5"></i> 12:00 瀨長島午餐 ＆ 看飛機</span>
+                                    白色地中海聚落看飛機起降、海鹽伴手禮最後補貨。
                                 </div>
                                 <div class="bg-amber-950/30 p-3.5 rounded-xl border border-amber-900/40 border-l-4 border-amber-500">
-                                    <span class="text-amber-400 font-bold">13:30 還車返台 ⚠️</span>：抵達機場附近營業所還車（比原定提早30分），搭 15:50 航班起飛返台！
+                                    <span class="text-amber-400 font-bold flex items-center gap-1 mb-1"><i data-lucide="plane" class="w-3.5 h-3.5"></i> 13:30 還車返台 ➔ 15:50 起飛</span>
+                                    抵達機場附近營業所還車（預留2小時前抵達航廈），搭 15:50 航班起飛返台！
                                 </div>
                             </div>
-                            <div class="map-container rounded-xl overflow-hidden border border-slate-800 h-[320px] md:h-auto">
-                                <iframe width="100%" height="100%" style="border:0;" loading="lazy" src="https://maps.google.com/maps?q=Yachimun+no+Sato+Okinawa&output=embed"></iframe>
+
+                            <!-- Embedded Leaflet Route Map 5B -->
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                                    <span class="flex items-center gap-1 text-pink-400 font-bold"><i data-lucide="map" class="w-3.5 h-3.5"></i> Day 5 (選項 B) 路徑地圖</span>
+                                    <button onclick="resetMapView(mapDay5B, day5BBounds)" class="hover:text-white transition flex items-center gap-1"><i data-lucide="maximize-2" class="w-3 h-3"></i> 重設全景視野</button>
+                                </div>
+                                <div class="relative w-full h-[400px] rounded-xl overflow-hidden border border-slate-800 card-shadow">
+                                    <div id="map-day5-b" class="w-full h-full"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -543,33 +780,37 @@
             <div id="runner" class="tab-panel hidden space-y-6">
                 <div class="bg-slate-900 rounded-2xl p-6 md:p-8 card-shadow border border-slate-800">
                     <div class="mb-6 pb-4 border-b border-slate-800">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/80 px-3 py-1 rounded-full border border-amber-800/50">Fitness 🏃</span>
-                        <h2 class="text-2xl font-black text-white mt-2">晨跑專屬路線指南</h2>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-950/80 px-3 py-1 rounded-full border border-amber-800/50 flex items-center gap-1.5 w-fit">
+                            <i data-lucide="activity" class="w-3.5 h-3.5"></i> Fitness 🏃
+                        </span>
+                        <h2 class="text-2xl font-black text-white mt-2">跑者專屬晨跑路線指南</h2>
                     </div>
+                    
                     <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-slate-950/60 p-6 rounded-2xl border border-slate-800/60">
-                            <span class="text-xs font-bold text-sky-400">Day 2 (9/30) ｜ 5-6 km</span>
-                            <h3 class="text-lg font-bold text-slate-100 mb-3">那霸市區路線</h3>
-                            <ul class="space-y-2 text-sm text-slate-300">
-                                <li>✨ <strong>路線</strong>：嘉新酒店 ➔ 久茂地川 ➔ <strong>奧武山公園（折返）</strong></li>
-                                <li>📌 <strong>特色</strong>：公園內有平整的專用橡膠慢跑道與綠蔭，清晨微涼舒適，回程可順路探訪波上宮周邊。（若選跳島方案可提早至 06:00）</li>
+                        <div class="bg-slate-950/60 p-6 rounded-2xl border border-slate-800/60 space-y-3">
+                            <span class="text-xs font-bold text-sky-400 flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Day 2 (9/30) 清晨 ｜ 5-6 km</span>
+                            <h3 class="text-lg font-bold text-slate-100">那霸市區路線（綠蔭橡膠跑道）</h3>
+                            <ul class="space-y-2 text-xs md:text-sm text-slate-300">
+                                <li>✨ <strong>路線推薦</strong>：嘉新酒店出發 ➔ 經久茂地川 ➔ <strong>奧武山公園繞圈</strong> ➔ 返回酒店。</li>
+                                <li>📌 <strong>路線亮點</strong>：奧武山公園內設有平整柔軟的專用橡膠慢跑跑道與綠蔭，清晨微涼舒適，回程可順路探訪波之上海灘。若選跳島方案可提早至 06:00 進行。</li>
                             </ul>
                         </div>
-                        <div class="bg-slate-950/60 p-6 rounded-2xl border border-slate-800/60">
-                            <span class="text-xs font-bold text-sky-400">Day 4 (10/2) ｜ 5-8 km</span>
-                            <h3 class="text-lg font-bold text-slate-100 mb-3">恩納海岸公路路線</h3>
-                            <ul class="space-y-2 text-sm text-slate-300">
-                                <li>✨ <strong>路線</strong>：AQUASENSE 酒店 ➔ <strong>國道 58 號（海側人行道往北）折返</strong></li>
-                                <li>🌊 <strong>特色</strong>：步道平整寬敞，一路緊鄰透明度極高的清晨「沖繩藍」海景，極度舒壓。</li>
+                        <div class="bg-slate-950/60 p-6 rounded-2xl border border-slate-800/60 space-y-3">
+                            <span class="text-xs font-bold text-teal-400 flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Day 4 (10/2) 清晨 ｜ 5-8 km</span>
+                            <h3 class="text-lg font-bold text-slate-100">恩納海岸公路路線（極致海景跑）</h3>
+                            <ul class="space-y-2 text-xs md:text-sm text-slate-300">
+                                <li>✨ <strong>路線推薦</strong>：AQUASENSE 酒店出發 ➔ 切入 <strong>國道 58 號（海側人行道往北）折返</strong>。</li>
+                                <li>🌊 <strong>路線亮點</strong>：人行步道平整寬敞，左手邊即是透明度極高的清晨「沖繩藍」海景與浪花聲，初秋早晨跑起來極度舒壓。</li>
                             </ul>
                         </div>
                     </div>
+
                     <div class="mt-6 bg-sky-950/40 p-4 rounded-xl border border-sky-900/60 flex items-start gap-3">
-                        <span class="text-sky-400 font-bold text-lg">💡</span>
+                        <i data-lucide="sparkles" class="w-5 h-5 text-sky-400 shrink-0 mt-0.5"></i>
                         <div class="text-xs md:text-sm text-sky-200">
-                            <p class="font-bold mb-1">跑者裝備建議：</p>
-                            <p>沖繩初秋（9-10月）早晨氣溫約 24-26°C，紫外線偏強，建議備妥薄款防曬帽、太陽眼鏡與運動心率手錶。</p>
-                        `</div>
+                            <p class="font-bold mb-1">跑者裝備叮嚀：</p>
+                            <p>沖繩初秋（9-10月）清晨氣溫約 24-26°C，海邊紫外線偏強，建議備妥薄款防曬帽、太陽眼鏡、導汗帶與運動心率手錶。</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -579,23 +820,230 @@
     </main>
 
     <!-- Footer -->
-    <footer class="text-center py-8 text-xs text-slate-500 border-t border-slate-800 mt-auto">
-        2026 沖繩 5 天 4 夜秋日慢活之旅 ｜ Multi-Plan & Full-Route Interactive Edition
+    <footer class="text-center py-8 text-xs text-slate-500 border-t border-slate-800 mt-auto flex flex-col items-center gap-2">
+        <p class="flex items-center gap-1.5">
+            <span>2026 沖繩 5 天 4 夜秋日慢活之旅</span>
+            <span>・</span>
+            <span class="text-sky-400 font-semibold">Interactive Route Map Edition</span>
+        </p>
+        <p class="text-slate-600">Base maps &copy; OpenStreetMap contributors &copy; CARTO Dark Matter</p>
     </footer>
 
-    <!-- Script for Tab Switching & Sub-Plan Toggles -->
+    <!-- JavaScript: Leaflet Maps & Routes Implementation -->
     <script>
-        function switchTab(targetId) {
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                panel.classList.add('hidden');
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Tile layer config (CartoDB Dark Matter)
+        const darkTileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+        const tileOptions = {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        };
+
+        // Pin helper
+        function makePin(number, color) {
+            return L.divIcon({
+                className: 'custom-pin',
+                html: `<div style="background-color: ${color}; width: 26px; height: 26px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; border: 2px solid #ffffff; box-shadow: 0 0 10px ${color};">${number}</div>`,
+                iconSize: [26, 26],
+                iconAnchor: [13, 13],
+                popupAnchor: [0, -14]
             });
+        }
+
+        // Coordinates Data
+        const day1Coords = [
+            { id: 1, name: "1. 那霸機場 (OKA)", desc: "14:40 抵達，搭乘單軌前往市區", lat: 26.2064, lng: 127.6459 },
+            { id: 2, name: "2. 那霸嘉新酒店 (Hotel Collective)", desc: "辦理入住，位於國際通正中心", lat: 26.2162, lng: 127.6872 },
+            { id: 3, name: "3. 浮島通 / 國際通散策", desc: "傍晚巷弄文青設計選品店散策", lat: 26.2148, lng: 127.6891 },
+            { id: 4, name: "4. 沖繩燒肉 極上牛 (小祿站)", desc: "晚餐：頂級神戶牛/本土黑毛和牛燒肉", lat: 26.1963, lng: 127.6669 }
+        ];
+
+        const day2ACoords = [
+            { id: 1, name: "1. 奧武山公園 (清晨跑折返點)", desc: "清晨 5-6 km 跑步，平整橡膠跑道與綠蔭", lat: 26.2045, lng: 127.6763 },
+            { id: 2, name: "2. 首里城公園", desc: "上午文化散策，古城牆與市景俯瞰", lat: 26.2170, lng: 127.7195 },
+            { id: 3, name: "3. ポーたま 牧志市場店 (沖繩飯糰)", desc: "午餐輕食：現點現做炸蝦明太子飯糰", lat: 26.2145, lng: 127.6888 },
+            { id: 4, name: "4. 波上宮 ＆ 波之上海灘", desc: "下午巨岩神社參拜與海灘散步放空", lat: 26.2207, lng: 127.6713 },
+            { id: 5, name: "5. 琉球海鮮酒場 琉星", desc: "晚餐：久茂地當季現流海鮮居酒屋", lat: 26.2168, lng: 127.6834 }
+        ];
+
+        const day2BCoords = [
+            { id: 1, name: "1. 泊港 (Tomarin)", desc: "09:00 搭乘高速船 Marine Liner 出海", lat: 26.2255, lng: 127.6833 },
+            { id: 2, name: "2. 渡嘉敷港", desc: "09:35 抵達渡嘉敷島，搭接駁車前往海灘", lat: 26.1983, lng: 127.3622 },
+            { id: 3, name: "3. 阿波連海灘 (Aharen Beach)", desc: "世界級「慶良間藍」玻璃海踏浪與午餐", lat: 26.1793, lng: 127.3484 },
+            { id: 4, name: "4. 阿波連展望台", desc: "居高臨下俯瞰漸層海灣，16:00 搭船返航", lat: 26.1747, lng: 127.3478 },
+            { id: 5, name: "5. 琉球海鮮酒場 琉星", desc: "傍晚返回那霸市區享用居酒屋晚餐", lat: 26.2168, lng: 127.6834 }
+        ];
+
+        const day3Coords = [
+            { id: 1, name: "1. 租車取車點 (美榮橋/縣廳前)", desc: "09:00 取車北上開啟自駕旅程", lat: 26.2198, lng: 127.6855 },
+            { id: 2, name: "2. GORDIE'S 漢堡 (北谷美國村)", desc: "午餐：美國村炭火手打漢堡 / 舒芙蕾鬆餅", lat: 26.3217, lng: 127.7554 },
+            { id: 3, name: "3. 萬座毛海岬遊步道", desc: "下午戶外健行：象鼻岩與群青斷崖海景步道", lat: 26.5049, lng: 127.8505 },
+            { id: 4, name: "4. 恩納水感酒店 (AQUASENSE)", desc: "15:30 入住奢華海景房與露天陽台浴缸", lat: 26.4475, lng: 127.8136 },
+            { id: 5, name: "5. 琉球料理 海物語 本店", desc: "晚餐：傳統民謠三線琴演奏海鮮料理", lat: 26.4389, lng: 127.8082 }
+        ];
+
+        const day4Coords = [
+            { id: 1, name: "1. 恩納國道58海側晨跑路線", desc: "清晨海景跑 5-8 km，國道58人行步道", lat: 26.4475, lng: 127.8136 },
+            { id: 2, name: "2. 沖繩美麗海水族館", desc: "上午必去：黑潮之海巨大鯨鯊與鬼蝠魟", lat: 26.6943, lng: 127.8779 },
+            { id: 3, name: "3. 百年老店 岸本食堂", desc: "午餐：柴火古法熬製三層肉手打沖繩麵", lat: 26.6628, lng: 127.8887 },
+            { id: 4, name: "4. 備瀨福木林道", desc: "下午租借自行車漫遊綠色隧道至海灘", lat: 26.7042, lng: 127.8814 },
+            { id: 5, name: "5. 島時間 (Shimajikan)", desc: "晚餐：恩納村在地家庭居酒食堂", lat: 26.5055, lng: 127.8552 }
+        ];
+
+        const day5ACoords = [
+            { id: 1, name: "1. 殘波岬燈塔公園", desc: "上午散步：白色燈塔與30米高海崖絕景", lat: 26.4402, lng: 127.7126 },
+            { id: 2, name: "2. 港川外人住宅區 (oHacorté 港川店)", desc: "午茶採買：水果塔、砂餅伴手禮與選物", lat: 26.2625, lng: 127.7153 },
+            { id: 3, name: "3. 瀨長島 Umikaji Terrace", desc: "下午：白色階梯看飛機吃午餐、食材伴手禮", lat: 26.1751, lng: 127.6433 },
+            { id: 4, name: "4. 那霸機場租車營業所", desc: "13:30 還車，搭接駁車前往航廈返台", lat: 26.1950, lng: 127.6521 }
+        ];
+
+        const day5BCoords = [
+            { id: 1, name: "1. 讀谷山燒 陶藝之村", desc: "散步紅瓦登窯石板路，探尋陶藝家工坊", lat: 26.4087, lng: 127.7634 },
+            { id: 2, name: "2. 港川外人住宅區 (oHacorté 港川店)", desc: "午茶採買：水果塔、砂餅伴手禮與選物", lat: 26.2625, lng: 127.7153 },
+            { id: 3, name: "3. 瀨長島 Umikaji Terrace", desc: "下午：白色階梯看飛機吃午餐、食材伴手禮", lat: 26.1751, lng: 127.6433 },
+            { id: 4, name: "4. 那霸機場租車營業所", desc: "13:30 還車，搭接駁車前往航廈返台", lat: 26.1950, lng: 127.6521 }
+        ];
+
+        // Map instances and bounds
+        let mapOverview, mapDay1, mapDay2A, mapDay2B, mapDay3, mapDay4, mapDay5A, mapDay5B;
+        let day1Bounds, day2ABounds, day2BBounds, day3Bounds, day4Bounds, day5ABounds, day5BBounds;
+
+        // Route creation helper
+        function setupRouteMap(elementId, coords, color) {
+            const map = L.map(elementId, { zoomControl: true, scrollWheelZoom: false });
+            L.tileLayer(darkTileUrl, tileOptions).addTo(map);
+
+            const latLngs = [];
+            coords.forEach((c) => {
+                const pos = [c.lat, c.lng];
+                latLngs.push(pos);
+                const marker = L.marker(pos, { icon: makePin(c.id, color) }).addTo(map);
+                marker.bindPopup(`
+                    <div class="text-xs">
+                        <strong class="text-sm font-bold text-white block mb-1">${c.name}</strong>
+                        <span class="text-slate-300">${c.desc}</span>
+                    </div>
+                `);
+                c._marker = marker;
+            });
+
+            // Draw polyline route
+            const polyline = L.polyline(latLngs, {
+                color: color,
+                weight: 4,
+                opacity: 0.85,
+                dashArray: '8, 8',
+                lineJoin: 'round'
+            }).addTo(map);
+
+            const bounds = polyline.getBounds().pad(0.15);
+            map.fitBounds(bounds);
+
+            return { map, bounds };
+        }
+
+        // Setup All Maps on DOM Ready
+        window.addEventListener('DOMContentLoaded', () => {
+            // Day 1
+            const d1 = setupRouteMap('map-day1', day1Coords, '#38bdf8');
+            mapDay1 = d1.map; day1Bounds = d1.bounds;
+
+            // Day 2A
+            const d2a = setupRouteMap('map-day2-a', day2ACoords, '#60a5fa');
+            mapDay2A = d2a.map; day2ABounds = d2a.bounds;
+
+            // Day 2B
+            const d2b = setupRouteMap('map-day2-b', day2BCoords, '#34d399');
+            mapDay2B = d2b.map; day2BBounds = d2b.bounds;
+
+            // Day 3
+            const d3 = setupRouteMap('map-day3', day3Coords, '#2dd4bf');
+            mapDay3 = d3.map; day3Bounds = d3.bounds;
+
+            // Day 4
+            const d4 = setupRouteMap('map-day4', day4Coords, '#fbbf24');
+            mapDay4 = d4.map; day4Bounds = d4.bounds;
+
+            // Day 5A
+            const d5a = setupRouteMap('map-day5-a', day5ACoords, '#c084fc');
+            mapDay5A = d5a.map; day5ABounds = d5a.bounds;
+
+            // Day 5B
+            const d5b = setupRouteMap('map-day5-b', day5BCoords, '#f472b6');
+            mapDay5B = d5b.map; day5BBounds = d5b.bounds;
+
+            // Overview Map
+            setupOverviewMap();
+        });
+
+        function setupOverviewMap() {
+            mapOverview = L.map('map-overview', { zoomControl: true, scrollWheelZoom: false });
+            L.tileLayer(darkTileUrl, tileOptions).addTo(mapOverview);
+
+            const allGroups = [
+                { coords: day1Coords, color: '#38bdf8', label: 'Day 1' },
+                { coords: day2ACoords, color: '#60a5fa', label: 'Day 2' },
+                { coords: day3Coords, color: '#2dd4bf', label: 'Day 3' },
+                { coords: day4Coords, color: '#fbbf24', label: 'Day 4' },
+                { coords: day5ACoords, color: '#c084fc', label: 'Day 5' }
+            ];
+
+            const allPoints = [];
+            allGroups.forEach(grp => {
+                const latLngs = [];
+                grp.coords.forEach(c => {
+                    const pos = [c.lat, c.lng];
+                    latLngs.push(pos);
+                    allPoints.push(pos);
+                    const marker = L.marker(pos, { icon: makePin(c.id, grp.color) }).addTo(mapOverview);
+                    marker.bindPopup(`
+                        <div class="text-xs">
+                            <span class="text-[10px] uppercase font-bold text-sky-400 block mb-0.5">${grp.label}</span>
+                            <strong class="text-sm font-bold text-white block mb-1">${c.name}</strong>
+                            <span class="text-slate-300">${c.desc}</span>
+                        </div>
+                    `);
+                });
+                L.polyline(latLngs, { color: grp.color, weight: 3, opacity: 0.6, dashArray: '6, 6' }).addTo(mapOverview);
+            });
+
+            const allBounds = L.latLngBounds(allPoints).pad(0.1);
+            mapOverview.fitBounds(allBounds);
+        }
+
+        // Focus & Zoom Helper for Itinerary items
+        function focusLocation(mapInstance, lat, lng, name) {
+            if (!mapInstance) return;
+            mapInstance.flyTo([lat, lng], 15, { duration: 1.2 });
+            mapInstance.eachLayer(layer => {
+                if (layer.getPopup && layer.getLatLng) {
+                    const p = layer.getLatLng();
+                    if (Math.abs(p.lat - lat) < 0.0005 && Math.abs(p.lng - lng) < 0.0005) {
+                        layer.openPopup();
+                    }
+                }
+            });
+        }
+
+        // Reset view helper
+        function resetMapView(mapInstance, bounds) {
+            if (mapInstance && bounds) {
+                mapInstance.fitBounds(bounds, { animate: true });
+            }
+        }
+
+        // Main Tab Switcher
+        function switchTab(targetId) {
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
             document.getElementById(targetId).classList.remove('hidden');
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('bg-sky-600', 'bg-amber-600', 'text-white', 'border-sky-500', 'border-amber-500');
                 btn.classList.add('bg-slate-900', 'text-slate-300', 'border', 'border-slate-800', 'hover:bg-slate-800');
                 if (btn.getAttribute('data-target') === 'runner') {
-                    btn.classList.remove('text-white');
                     btn.classList.add('text-amber-400');
                 }
             });
@@ -608,6 +1056,25 @@
             } else {
                 activeBtn.classList.add('bg-sky-600', 'text-white', 'border-sky-500');
             }
+
+            // Invalidate Map Sizes
+            setTimeout(() => {
+                if (targetId === 'overview' && mapOverview) mapOverview.invalidateSize();
+                if (targetId === 'day1' && mapDay1) mapDay1.invalidateSize();
+                if (targetId === 'day2') {
+                    if (mapDay2A) mapDay2A.invalidateSize();
+                    if (mapDay2B) mapDay2B.invalidateSize();
+                }
+                if (targetId === 'day3' && mapDay3) mapDay3.invalidateSize();
+                if (targetId === 'day4' && mapDay4) mapDay4.invalidateSize();
+                if (targetId === 'day5') {
+                    if (mapDay5A) mapDay5A.invalidateSize();
+                    if (mapDay5B) mapDay5B.invalidateSize();
+                }
+            }, 100);
+
+            // Re-render icons if needed
+            lucide.createIcons();
         }
 
         // Day 2 Sub-Plan Switcher
@@ -615,14 +1082,17 @@
             if (plan === 'planA') {
                 document.getElementById('day2-planA').classList.remove('hidden');
                 document.getElementById('day2-planB').classList.add('hidden');
-                document.getElementById('btn-planA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-sky-600 text-white shadow';
-                document.getElementById('btn-planB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white';
+                document.getElementById('btn-planA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-sky-600 text-white shadow flex items-center gap-1.5';
+                document.getElementById('btn-planB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
+                setTimeout(() => { if (mapDay2A) mapDay2A.invalidateSize(); }, 50);
             } else {
                 document.getElementById('day2-planA').classList.add('hidden');
                 document.getElementById('day2-planB').classList.remove('hidden');
-                document.getElementById('btn-planB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-emerald-600 text-white shadow';
-                document.getElementById('btn-planA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white';
+                document.getElementById('btn-planB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-emerald-600 text-white shadow flex items-center gap-1.5';
+                document.getElementById('btn-planA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
+                setTimeout(() => { if (mapDay2B) mapDay2B.invalidateSize(); }, 50);
             }
+            lucide.createIcons();
         }
 
         // Day 5 Sub-Option Switcher
@@ -630,14 +1100,17 @@
             if (opt === 'optA') {
                 document.getElementById('day5-optA').classList.remove('hidden');
                 document.getElementById('day5-optB').classList.add('hidden');
-                document.getElementById('btn-optA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-sky-600 text-white shadow';
-                document.getElementById('btn-optB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white';
+                document.getElementById('btn-optA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-purple-600 text-white shadow flex items-center gap-1.5';
+                document.getElementById('btn-optB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
+                setTimeout(() => { if (mapDay5A) mapDay5A.invalidateSize(); }, 50);
             } else {
                 document.getElementById('day5-optA').classList.add('hidden');
                 document.getElementById('day5-optB').classList.remove('hidden');
-                document.getElementById('btn-optB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-emerald-600 text-white shadow';
-                document.getElementById('btn-optA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white';
+                document.getElementById('btn-optB').className = 'px-4 py-2 rounded-lg font-bold text-xs transition bg-pink-600 text-white shadow flex items-center gap-1.5';
+                document.getElementById('btn-optA').className = 'px-4 py-2 rounded-lg font-bold text-xs transition text-slate-400 hover:text-white flex items-center gap-1.5';
+                setTimeout(() => { if (mapDay5B) mapDay5B.invalidateSize(); }, 50);
             }
+            lucide.createIcons();
         }
     </script>
 </body>
