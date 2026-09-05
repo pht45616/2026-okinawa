@@ -28,6 +28,34 @@ const tripData = {
             stops: [
                 {
                     id: 1,
+                    time: "09:00",
+                    name: "大園出國停車場 (第三停車場)",
+                    shortName: "大園停車場 🅿️",
+                    category: "transport",
+                    categoryLabel: "免費停車",
+                    desc: "09:00 抵達預約好的大園出國停車場辦理免費停車手續，隨後搭乘接駁車前往桃園機場。",
+                    lat: 25.0789,
+                    lng: 121.2291,
+                    stay: "30分",
+                    tips: "已預約免費停車，搭乘接駁車前往桃機第一航廈",
+                    mapsUrl: "https://www.google.com/maps/search/?api=1&query=大園出國停車場"
+                },
+                {
+                    id: 2,
+                    time: "10:00",
+                    name: "桃園機場第一航廈 (貴賓室)",
+                    shortName: "桃機貴賓室 🛋️",
+                    category: "food",
+                    categoryLabel: "機場貴賓室",
+                    desc: "辦理行李托運與出境通關，前往機場貴賓室享受精緻美食與特調飲品，悠閒候機。",
+                    lat: 25.0797,
+                    lng: 121.2342,
+                    stay: "200分",
+                    tips: "預留充足時間辦理登機並在貴賓室放鬆用餐",
+                    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Taoyuan+Airport+Terminal+1"
+                },
+                {
+                    id: 3,
                     time: "14:40",
                     name: "那霸機場 (OKA)",
                     shortName: "機場 ✈️",
@@ -41,7 +69,7 @@ const tripData = {
                     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Naha+Airport"
                 },
                 {
-                    id: 2,
+                    id: 4,
                     time: "16:00",
                     name: "那霸嘉新酒店 (Hotel Collective)",
                     shortName: "嘉新酒店 🏨",
@@ -55,7 +83,7 @@ const tripData = {
                     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Hotel+Collective+Naha"
                 },
                 {
-                    id: 3,
+                    id: 5,
                     time: "17:00",
                     name: "浮島通 / 國際通散策",
                     shortName: "國際通散策 🛍️",
@@ -69,7 +97,7 @@ const tripData = {
                     mapsUrl: "https://www.google.com/maps/search/?api=1&query=26.2148,127.6891"
                 },
                 {
-                    id: 4,
+                    id: 6,
                     time: "18:30",
                     name: "沖繩燒肉 極上牛 (小祿站)",
                     shortName: "極上牛 🥩",
@@ -83,7 +111,7 @@ const tripData = {
                     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Gokujougyu+Naha"
                 },
                 {
-                    id: 5,
+                    id: 7,
                     time: "21:00",
                     name: "那霸嘉新酒店 (返回休息)",
                     shortName: "返回嘉新 🏨",
