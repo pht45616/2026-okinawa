@@ -137,9 +137,14 @@ function initRouteMap(elementId, stops, color, mapKey) {
     L.tileLayer(darkTileUrl, tileOptions).addTo(map);
 
     const latLngs = [];
+    const boundsLatLngs = [];
     stops.forEach(s => {
         const pos = [s.lat, s.lng];
         latLngs.push(pos);
+        // 過濾掉台灣地區的點位（緯度 < 26），避免 Day 1 視野被拉得太遠
+        if (s.lat >= 26) {
+            boundsLatLngs.push(pos);
+        }
         const marker = L.marker(pos, { icon: createMarkerIcon(s.id, color) }).addTo(map);
         marker.bindPopup(`
             <div class="text-xs">
@@ -158,7 +163,8 @@ function initRouteMap(elementId, stops, color, mapKey) {
             lineJoin: 'round'
         }).addTo(map);
 
-        const bounds = polyline.getBounds().pad(0.15);
+        const targetBounds = boundsLatLngs.length > 0 ? boundsLatLngs : latLngs;
+        const bounds = L.latLngBounds(targetBounds).pad(0.15);
         map.fitBounds(bounds);
         boundsMap[mapKey] = bounds;
     }
@@ -525,6 +531,7 @@ window.addEventListener('DOMContentLoaded', () => {
     L.tileLayer(darkTileUrl, tileOptions).addTo(overviewMap);
 
     const allPoints = [];
+    const overviewBoundsPoints = [];
     tripData.days.forEach(day => {
         const primaryStops = day.plans ? day.plans[0].stops : day.stops;
         const color = day.color;
@@ -534,6 +541,9 @@ window.addEventListener('DOMContentLoaded', () => {
             const pos = [s.lat, s.lng];
             latLngs.push(pos);
             allPoints.push(pos);
+            if (s.lat >= 26) {
+                overviewBoundsPoints.push(pos);
+            }
             const marker = L.marker(pos, { icon: createMarkerIcon(s.id, color) }).addTo(overviewMap);
             marker.bindPopup(`
                 <div class="text-xs">
@@ -547,8 +557,9 @@ window.addEventListener('DOMContentLoaded', () => {
         L.polyline(latLngs, { color: color, weight: 3, opacity: 0.65, dashArray: '6, 6' }).addTo(overviewMap);
     });
 
-    if (allPoints.length > 0) {
-        overviewBounds = L.latLngBounds(allPoints).pad(0.12);
+    const targetOverviewPoints = overviewBoundsPoints.length > 0 ? overviewBoundsPoints : allPoints;
+    if (targetOverviewPoints.length > 0) {
+        overviewBounds = L.latLngBounds(targetOverviewPoints).pad(0.12);
         overviewMap.fitBounds(overviewBounds);
     }
 
